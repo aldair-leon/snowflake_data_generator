@@ -1,3 +1,8 @@
+"""
+Author: Aldair Leon
+Date: May 17th, 2022
+"""
+
 from scripts.azure_blob_storage import azure_blob_storage_sas_toke, azure_blob_upload_files
 from scripts.snowflake_connection import snowflake_query_verify_env, snowflake_query_ctrd_tables
 

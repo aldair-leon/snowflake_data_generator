@@ -1,3 +1,8 @@
+"""
+Author: Aldair Leon
+Date: May 17th, 2022
+"""
+
 import os
 from azure.common import AzureHttpError
 from azure.storage.blob import BlockBlobService, BlobPermissions
