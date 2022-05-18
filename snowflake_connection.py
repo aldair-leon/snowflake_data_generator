@@ -46,7 +46,7 @@ def snowflake_connection(snowflake_env) -> snowflake.connector.connection:
 
 
 # Verify correct snowflake env
-def snowflake_query_execution_verify_env(env='DEV_PSR'):
+def snowflake_query_verify_env(env='DEV_PSR'):
     query_file = read_query_file()
     query = query_file["query_profile"]
     ctx = snowflake_connection(env)

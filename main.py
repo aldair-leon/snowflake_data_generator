@@ -1,4 +1,4 @@
-from snowflake_connection import snowflake_query_execution_verify_env, snowflake_query_ctrd_tables
+from snowflake_connection import snowflake_query_verify_env, snowflake_query_ctrd_tables
 
 entity = 'ITEM'
 
@@ -8,7 +8,7 @@ Number of parameters = 1
 env = DEV_PSR (Set as default )
 env available resources/env.json
 """
-snowflake_query_execution_verify_env()
+snowflake_query_verify_env()
 
 # Query CRTD Tables
 """
