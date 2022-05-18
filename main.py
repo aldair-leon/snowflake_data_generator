@@ -1,6 +1,7 @@
-from snowflake_connection import snowflake_query_verify_env, snowflake_query_ctrd_tables
+from scripts.snowflake_connection import snowflake_query_verify_env, snowflake_query_ctrd_tables
 
 entity = 'ITEM'
+env = 'JCP_PSR'
 
 # Verify Snowflake env
 """

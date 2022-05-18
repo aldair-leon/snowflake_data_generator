@@ -13,12 +13,12 @@ logger = log('ENV SETUP')
 
 # Resources folder
 def env_folder_path() -> str:
-    verify_path = os.path.exists(os.path.abspath("resources"))
+    verify_path = os.path.exists(os.path.abspath("../resources"))
     if verify_path:
         logger.info('Verify env file...')
     else:
         logger.error('Error env file, please verify your resource!')
-    return os.path.abspath("resources")
+    return os.path.abspath("../resources")
 
 
 # Env json file

@@ -4,9 +4,9 @@ Date: May 17th, 2022
 """
 
 import snowflake.connector
-from env_config import read_env_file, read_query_file
+from scripts.env_config import read_env_file, read_query_file
 from snowflake.connector.errors import DatabaseError, ProgrammingError
-from init_logger import log
+from scripts.init_logger import log
 
 # Logger
 logger = log('SNOWFLAKE CTX')
