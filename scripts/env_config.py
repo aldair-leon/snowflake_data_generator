@@ -5,7 +5,7 @@ Date: May 17th, 2022
 
 import json
 import os
-from init_logger import log
+from scripts.init_logger import log
 
 # Logger
 logger = log('ENV SETUP')
@@ -13,12 +13,12 @@ logger = log('ENV SETUP')
 
 # Resources folder
 def env_folder_path() -> str:
-    verify_path = os.path.exists(os.path.abspath("../resources"))
+    verify_path = os.path.exists(os.path.abspath("../snowflake/resources"))
     if verify_path:
         logger.info('Verify env file...')
     else:
-        logger.error('Error env file, please verify your resource!')
-    return os.path.abspath("../resources")
+        logger.error('Error env file, please verify your resource file!')
+    return os.path.abspath("../snowflake/resources")
 
 
 # Env json file

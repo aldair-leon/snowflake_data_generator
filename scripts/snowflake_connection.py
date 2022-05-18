@@ -15,13 +15,13 @@ logger = log('SNOWFLAKE CTX')
 # Establish connection between python - snowflake
 def snowflake_connection(snowflake_env) -> snowflake.connector.connection:
     env_cred = read_env_file()
-    type_auth = env_cred[snowflake_env][0]["authenticator"]
-    user = env_cred[snowflake_env][0]["user"]
-    account = env_cred[snowflake_env][0]["account"]
-    warehouse = env_cred[snowflake_env][0]["warehouse"]
-    database = env_cred[snowflake_env][0]["database"]
-    schema = env_cred[snowflake_env][0]["schema"]
-    role = env_cred[snowflake_env][0]["role"]
+    type_auth = env_cred['snowflake'][snowflake_env][0]["authenticator"]
+    user = env_cred['snowflake'][snowflake_env][0]["user"]
+    account = env_cred['snowflake'][snowflake_env][0]["account"]
+    warehouse = env_cred['snowflake'][snowflake_env][0]["warehouse"]
+    database = env_cred['snowflake'][snowflake_env][0]["database"]
+    schema = env_cred['snowflake'][snowflake_env][0]["schema"]
+    role = env_cred['snowflake'][snowflake_env][0]["role"]
     try:
         ctx = snowflake.connector.connect(
             authenticator=type_auth,
@@ -51,7 +51,6 @@ def snowflake_query_verify_env(env='DEV_PSR'):
     query = query_file["query_profile"]
     ctx = snowflake_connection(env)
     cursor = ctx.cursor()
-
     try:
         logger.info('Executing query....{0}'.format(query))
         execution = cursor.execute(query)
