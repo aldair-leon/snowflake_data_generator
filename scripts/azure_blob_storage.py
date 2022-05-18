@@ -8,7 +8,7 @@ from scripts.init_logger import log
 logger = log('SAS TOKEN BLOB STORAGE')
 
 
-def azure_blob_storage_sas_toke(blob_container):
+def azure_blob_storage_sas_toke(blob_container) -> tuple(BlockBlobService, str):
     blob_containers = read_env_file()
     sas_container = blob_containers['blob_storage'][blob_container][0]['sas_container']
     sas_token = blob_containers['blob_storage'][blob_container][0]['sas_token']
@@ -18,7 +18,7 @@ def azure_blob_storage_sas_toke(blob_container):
     return sas_container, block_blob_service
 
 
-def azure_blob_list_file(blob_container='DEV_PSR', folder_name="processing"):
+def azure_blob_list_file(blob_container: str = 'DEV_PSR', folder_name: str = "processing"):
     folder_name = "/" + folder_name
     sas_token = azure_blob_storage_sas_toke(blob_container)
     sas_container = sas_token[0]
@@ -31,7 +31,7 @@ def azure_blob_list_file(blob_container='DEV_PSR', folder_name="processing"):
         logger.error('<-- AuthenticationErrorDetail -->')
 
 
-def azure_blob_upload_files(blob_container='DEV_PSR'):
+def azure_blob_upload_files(blob_container: str = 'DEV_PSR'):
     sas_token = azure_blob_storage_sas_toke(blob_container)
     sas_container = sas_token[0]
     block_blob_service = sas_token[1]
@@ -41,4 +41,3 @@ def azure_blob_upload_files(blob_container='DEV_PSR'):
                                                  blob_name='ingress/' + files,
                                                  file_path=os.path.join(data_folder_path, files))
     logger.inf('<-- Upload file finished -->')
-

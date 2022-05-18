@@ -13,14 +13,14 @@ logger = log('ENV SETUP')
 
 # Resources folder
 def env_folder_path() -> str:
-    # verify_path = os.path.exists(os.path.abspath("../snowflake/resources"))
-    verify_path = os.path.exists(os.path.abspath("../resources"))
+    verify_path = os.path.exists(os.path.abspath("../snowflake/resources"))
+    # verify_path = os.path.exists(os.path.abspath("../resources"))
     if verify_path:
         logger.info('Verify env file...')
     else:
         logger.error('Error env file, please verify your resource file!')
-    # return os.path.abspath("../snowflake/resources")
-    return os.path.abspath("../resources")
+    return os.path.abspath("../snowflake/resources")
+    # return os.path.abspath("../resources")
 
 
 # Env json file
@@ -53,11 +53,11 @@ def read_query_file() -> json:
 
 # Data folder
 def data_folder() -> str:
-    # verify_path = os.path.exists(os.path.abspath("../snowflake/data"))
-    verify_path = os.path.exists(os.path.abspath("../data"))
+    verify_path = os.path.exists(os.path.abspath("../snowflake/data"))
+    # verify_path = os.path.exists(os.path.abspath("../data"))
     if verify_path:
         logger.info('Verify data folder...')
     else:
         logger.error('Error data folder doesnt exist, please verify your path!')
-    # return os.path.abspath("../snowflake/data")
-    return os.path.abspath("../data")
+    return os.path.abspath("../snowflake/data")
+    # return os.path.abspath("../data")

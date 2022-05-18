@@ -13,7 +13,7 @@ logger = log('SNOWFLAKE CTX')
 
 
 # Establish connection between python - snowflake
-def snowflake_connection(snowflake_env) -> snowflake.connector.connection:
+def snowflake_connection(snowflake_env: object) -> snowflake.connector.connection:
     env_cred = read_env_file()
     type_auth = env_cred['snowflake'][snowflake_env][0]["authenticator"]
     user = env_cred['snowflake'][snowflake_env][0]["user"]
@@ -46,7 +46,7 @@ def snowflake_connection(snowflake_env) -> snowflake.connector.connection:
 
 
 # Verify correct snowflake env
-def snowflake_query_verify_env(env='DEV_PSR'):
+def snowflake_query_verify_env(env: str = 'DEV_PSR'):
     query_file = read_query_file()
     query = query_file["query_profile"]
     ctx = snowflake_connection(env)
@@ -70,7 +70,7 @@ Query predefine in resources/query.json
 """
 
 
-def snowflake_query_ctrd_tables(entity, env='DEV_PSR'):
+def snowflake_query_ctrd_tables(entity: str, env: str = 'DEV_PSR'):
     query_file = read_query_file()
     query_crtd_entity = query_file["query_crtd_table_entity"].format(entity)
     # Line 76 : SELECT * FROM CRTD_{entity} LIMIT 10; --> for testing just query top 10 values
