@@ -4,24 +4,24 @@ Date: May 17th, 2022
 """
 
 import snowflake.connector
-from env_config import read_env_file, read_query_file
+from scripts.env_config import read_env_file, read_query_file
 from snowflake.connector.errors import DatabaseError, ProgrammingError
-from init_logger import log
+from scripts.init_logger import log
 
 # Logger
 logger = log('SNOWFLAKE CTX')
 
 
 # Establish connection between python - snowflake
-def snowflake_connection(snowflake_env) -> snowflake.connector.connection:
+def snowflake_connection(snowflake_env: object) -> snowflake.connector.connection:
     env_cred = read_env_file()
-    type_auth = env_cred[snowflake_env][0]["authenticator"]
-    user = env_cred[snowflake_env][0]["user"]
-    account = env_cred[snowflake_env][0]["account"]
-    warehouse = env_cred[snowflake_env][0]["warehouse"]
-    database = env_cred[snowflake_env][0]["database"]
-    schema = env_cred[snowflake_env][0]["schema"]
-    role = env_cred[snowflake_env][0]["role"]
+    type_auth = env_cred['snowflake'][snowflake_env][0]["authenticator"]
+    user = env_cred['snowflake'][snowflake_env][0]["user"]
+    account = env_cred['snowflake'][snowflake_env][0]["account"]
+    warehouse = env_cred['snowflake'][snowflake_env][0]["warehouse"]
+    database = env_cred['snowflake'][snowflake_env][0]["database"]
+    schema = env_cred['snowflake'][snowflake_env][0]["schema"]
+    role = env_cred['snowflake'][snowflake_env][0]["role"]
     try:
         ctx = snowflake.connector.connect(
             authenticator=type_auth,
@@ -46,12 +46,11 @@ def snowflake_connection(snowflake_env) -> snowflake.connector.connection:
 
 
 # Verify correct snowflake env
-def snowflake_query_execution_verify_env(env='JCP_PSR'):
+def snowflake_query_verify_env(env: str = 'DEV_PSR'):
     query_file = read_query_file()
     query = query_file["query_profile"]
     ctx = snowflake_connection(env)
     cursor = ctx.cursor()
-
     try:
         logger.info('Executing query....{0}'.format(query))
         execution = cursor.execute(query)
@@ -71,7 +70,7 @@ Query predefine in resources/query.json
 """
 
 
-def snowflake_query_ctrd_tables(entity, env='JCP_PSR'):
+def snowflake_query_ctrd_tables(entity: str, env: str = 'DEV_PSR'):
     query_file = read_query_file()
     query_crtd_entity = query_file["query_crtd_table_entity"].format(entity)
     # Line 76 : SELECT * FROM CRTD_{entity} LIMIT 10; --> for testing just query top 10 values
