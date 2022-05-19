@@ -7,7 +7,7 @@
 
 import os
 from azure.common import AzureHttpError
-from azure.storage.blob import BlockBlobService, BlobPermissions
+from azure.storage.blob import BlockBlobService
 from scripts.env_config import read_env_file, data_folder
 from scripts.init_logger import log
 

@@ -21,8 +21,8 @@ def snowflake_connection(snowflake_env: str) -> snowflake.connector.connection:
 
             Establish connection between python and snowflake, then return connection string.
 
-                :param snowflake_env: -> str
-                :return: ctx -> Snowflake connection
+            :param snowflake_env: -> str
+            :return: ctx -> Snowflake connection
 
     """
     env_cred = read_env_file()
