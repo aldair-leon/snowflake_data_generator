@@ -1,17 +1,52 @@
-# Read Files Blob storage
-from azure.storage.blob import BlockBlobService, BlobPermissions
-import os
+import random
+from datetime import datetime, date, timedelta
+from faker import Faker
+import pandas as pd
+from faker.providers import BaseProvider
 
-sas_container = '6d99e867-063d-4996-98ca-9830d6ccf3d4'
-sas_token = 'sp=racwl&st=2022-04-29T16:57:38Z&se=2022-07-30T00:57:38Z&spr=https&sv=2020-08-04&sr=c&sig=26MDHh05HMz6FAXpO8s8im5WhTZyXuRP%2BK3nGuuaizw%3D'
-file_path = 'C://Users//1027147//PycharmProjects//snwoflake//data//items_ISDM-2021.2.0_20220528T043900Z_Test001.csv'
-blob_service = BlockBlobService(account_name='storjdpblkprdeus201', sas_token=sas_token)
-blob_service.create_blob_from_path(container_name=sas_container,blob_name='ingress/items_ISDM-2021.2.0_20220528T043900Z_Test001.csv',
-                                   file_path=file_path)
+fake = Faker(["en_US"])
+
+location_type_options = ['SUPPLIER', 'DISTRIBUTION_CENTER', 'STORE']
+
+header_location = ['LOCATION',
+                   'LOCATIONNAME',
+                   'LOCATIONTYPE',
+                   'COUNTRY',
+                   'POSTALCODE',
+                   'CITY',
+                   'ADDRESS',
+                   'LATITUDE',
+                   'LONGITUDE',
+                   'ACTIVEFROM',
+                   'ACTIVEUPTO',
+                   'STATE']
 
 
+class MyProvider(BaseProvider):
+    def location(self) -> str:
+        date_end = date.today() + timedelta(days=10)
+        date_start = date_end - timedelta(days=9)
+        locations = [fake.bothify(text='???-####', letters='ABCDEF') for i in range(100)]
+        locations_name = [fake.company() for i in range(100)]
+        location_type = [random.choice(location_type_options) for i in range(100)]
+        country = ['US' for i in range(100)]
+        postal_code = [fake.building_number() for i in range(100)]
+        city = [fake.city() for i in range(100)]
+        street_address = [fake.street_address() for i in range(100)]
+        latitud_ = [float(fake.latitude()) for i in range(100)]
+        longitud_ = [float(fake.latitude()) for i in range(100)]
+        active_from = [str(fake.date('%m-%d-%y')) for i in range(100)]
+        active_up = [datetime.strptime(str(fake.date_between_dates(date_start, date_end)),
+                                       '%Y-%m-%d').strftime('%m-%d-%y') for i in range(100)]
+        state = [fake.country_code() for i in range(100)]
+        return locations, locations_name, location_type, country, postal_code, city, street_address, latitud_, longitud_, \
+               active_from, active_up, state
 
-# blob_list = blob_service.list_blobs(sas_container, prefix="processing/")
-# for blob in blob_list:
-#     print(blob.name)
 
+fake.add_provider(MyProvider)
+data = list(fake.location())
+
+df = pd.DataFrame(columns=header_location)
+for i in range(0, len(header_location)):
+    df[header_location[i]] = data[i]
+df.to_csv('file_name.csv', encoding='utf-8', index=False)
