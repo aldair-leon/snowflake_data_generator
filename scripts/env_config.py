@@ -79,10 +79,10 @@ def data_folder() -> str:
     # verify_path = os.path.exists(os.path.abspath("../data"))
     if verify_path:
         logger.info('Verify data folder...')
+        return os.path.abspath("../snowflake/data")
+        # return os.path.abspath("../data")
     else:
         logger.error('Error data folder doesnt exist, please verify your path!')
-    return os.path.abspath("../snowflake/data")
-    # return os.path.abspath("../data")
 
 
 # Data folder
@@ -97,9 +97,8 @@ def entity_file() -> str:
     if verify_path:
         with open(folder_path + '/entities.json') as f:
             entity = json.load(f)
-        logger.info('Loading entity file ...')
+            logger.info('Loading entity file ...')
         return entity
 
     else:
         logger.error('Error Loading entity file!')
-
