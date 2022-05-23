@@ -10,7 +10,7 @@ from scripts.snowflake_connection import snowflake_query_verify_env, snowflake_q
 from scripts.data_generation import data_generation_create_data
 
 entity = 'ITEM'
-env = 'JCP_PSR'
+env = 'DEV_PSR'
 folder = 'processing'
 
 # # Verify env
@@ -42,6 +42,7 @@ folder = 'processing'
 # Number of parameters = 1
 # env = DEV_PSR (Set as default )
 # """
-# azure_blob_upload_files(env)
+data_generation_create_data('locations', 10, 1)
+azure_blob_upload_files(env)
 
-data_generation_create_data('locations',1,3)
+

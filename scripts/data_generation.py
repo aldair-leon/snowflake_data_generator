@@ -80,7 +80,7 @@ def data_locations(number_records):
     """
     location_type_options = ['SUPPLIER', 'DISTRIBUTION_CENTER', 'STORE']
     start = datetime(1999, 1, 1)
-    finish = datetime(2100, 1, 1)
+    finish = datetime(9999, 1, 1)
     locations = [fake.bothify(text='???-####', letters='ABCDEF') for i in range(number_records)]
     locations_name = [fake.company() for i in range(number_records)]
     location_type = [random.choice(location_type_options) for i in range(number_records)]
