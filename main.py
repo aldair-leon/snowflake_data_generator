@@ -42,7 +42,7 @@ folder = 'processing'
 # Number of parameters = 1
 # env = DEV_PSR (Set as default )
 # """
-data_generation_create_data('locations', 10, 1)
-azure_blob_upload_files(env)
+data_generation_create_data('locations', 900000, 1)
+#azure_blob_upload_files(env)
 
 
