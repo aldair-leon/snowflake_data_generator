@@ -7,7 +7,7 @@
 
 from scripts.azure_blob_storage import azure_blob_storage_sas_toke, azure_blob_upload_files, azure_blob_list_file
 from scripts.snowflake_connection import snowflake_query_verify_env, snowflake_query_ctrd_tables
-from scripts.data_generation import data_generation_create_data
+from scripts.data_generation import data_generation_create_data_main, data_item
 
 entity = 'ITEM'
 env = 'DEV_PSR'
@@ -42,7 +42,7 @@ folder = 'processing'
 # Number of parameters = 1
 # env = DEV_PSR (Set as default )
 # """
-data_generation_create_data('locations', 900000, 1)
-#azure_blob_upload_files(env)
 
+data_generation_create_data_main('items', 10, 1)
+#azure_blob_upload_files(env)
 

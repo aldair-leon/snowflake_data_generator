@@ -9,6 +9,10 @@
           "PROCESS_CHANNEL_TYPE", "HANDLINGINSTRUCTIONCODE", "ITEM_ATTR1", "ITEM_ATTR2", "ITEM_ATTR3", "ITEM_ATTR4",
           "ITEM_ATTR5", "ITEM_ATTR6", "ITEM_ATTR7", "ITEM_ATTR8", "ITEM_ATTR9", "ITEM_ATTR10", "ITEM_FLAG1", "ITEM_FLAG2",
           "ITEM_FLAG3", "ITEM_FLAG4", "ITEM_FLAG5", "ITEM_VALUE1", "ITEM_VALUE2", "ITEM_VALUE3", "ITEM_VALUE4", "ITEM_VALUE5"
+        ],
+        "columns_position": [0,1,2,3,4,5,6],
+
+        "columns_name_data": ["PRODUCTID","PRODUCTNAME", "PRODUCTDESC", "PRODUCTUOM", "PRODUCTGROUPID", "ACTIVEFROM", "ACTIVEUPTO"
         ]
       }
     ],
@@ -51,9 +55,12 @@
     ],
       "itemhierarchylevelmembers": [
       {
-        "columns_name": ["PRODUCTGROUPID", "PARENTGROUPID", "DESCRIPTION"]
+        "columns_name": ["PRODUCTGROUPID", "PARENTGROUPID", "DESCRIPTION"],
+        "columns_position": [],
+        "columns_name_data": []
       }
     ],
+
         "measurements": [
       {
         "columns_name": ["UNITOFMEASURE","UNITOFMEASURENAME","UNITOFMEASUREDESCR"]

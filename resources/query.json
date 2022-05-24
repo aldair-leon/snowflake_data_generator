@@ -1,6 +1,7 @@
 {
 
    "query_profile":"SELECT CURRENT_USER(),CURRENT_ROLE(),CURRENT_ACCOUNT(),CURRENT_WAREHOUSE(),CURRENT_DATABASE(),CURRENT_SCHEMA()",
-   "query_crtd_table_entity": "SELECT * FROM CRTD_{0} LIMIT 10;"
+   "query_crtd_table_entity": "SELECT * FROM CRTD_{0} LIMIT {1};",
+   "query_stg_table_entity":"select hierarchylevelidentifier from stg_{0} LIMIT {1};"
 
 }

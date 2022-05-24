@@ -5,6 +5,7 @@ import pandas as pd
 from scripts.env_config import entity_file, data_folder
 from scripts.init_logger import log
 import os
+from scripts.snowflake_connection import snowflake_connection, snowflake_query_ctrd_tables
 
 # Logger
 logger = log('DATA GENERATION')
@@ -61,7 +62,7 @@ def data_generation_load_header_columns(entity_name: str = 'items'):
 def data_locations(number_records):
     """
 
-            This function generate data for location entity. And return list of data.
+        This function generate data for location entity. And return list of data.
 
         :param number_records:
         :return: locations
@@ -98,7 +99,165 @@ def data_locations(number_records):
            latitud_, longitud_, active_from, active_up, state
 
 
-def data_generation_create_data(entity_name: str, number_records: int, number_files):
+def data_itemhierarchylevelmembers(number_records):
+    """
+
+        This function generate data for itemhierarchylevelmembers entity. And return list of data.
+
+        :param number_records:
+        :return: product_group_id
+        :return: parent_group_id_
+        :return: description_
+
+
+    """
+    if number_records % 2 != 0:
+        number_records_even = number_records + 1
+        product_group_id = [fake.bothify(text='#-##-###-####') for i in range(number_records)]
+        parent_group_id = [fake.bothify(text='#-##-###') for i in range(int(number_records_even / 2))]
+        description = [fake.company() for i in range(int(number_records_even / 2))]
+        parent_group_id_ = [random.choice(parent_group_id) for i in range(number_records)]
+        description_ = [random.choice(description) for i in range(number_records)]
+        return product_group_id, parent_group_id_, description_
+    else:
+        product_group_id = [fake.bothify(text='#-##-###-####') for i in range(number_records)]
+        parent_group_id = [fake.bothify(text='#-##-###') for i in range(int(number_records / 2))]
+        description = [fake.company() for i in range(int(number_records / 2))]
+        parent_group_id_ = [random.choice(parent_group_id) for i in range(number_records)]
+        description_ = [random.choice(description) for i in range(number_records)]
+        return product_group_id, parent_group_id_, description_
+
+
+def data_item(number_records):
+    """
+
+        This function generate data for items entity. And return list of data.
+
+        :param number_records:
+        :return: product_group_id
+        :return: product_name
+        :return: product_desc
+        :return: product_uom
+        :return: parent_group_id_
+        :return: active_from
+        :return: active_up
+
+
+    """
+    if number_records % 2 != 0:
+        number_records_even = number_records + 1
+        # Temporarily we are extracting itemhierarchylevelmember from STG tables because data is not available in CRTD
+        product_group_query = snowflake_query_ctrd_tables(query_name='query_stg_table_entity',
+                                                          entity='itemhierarchylevelmember',
+                                                          number_of_records=str(number_records_even / 2))
+        parent_group_id = product_group_query['HIERARCHYLEVELIDENTIFIER'].tolist()
+        parent_group_id_ = [random.choice(parent_group_id) for i in range(number_records)]
+        start = datetime(1999, 1, 1)
+        finish = datetime(9999, 1, 1)
+        product_group_id = [fake.bothify(text='#########') for i in range(number_records)]
+        product_name = [fake.bothify(text='#############-PRODUCT_TEST-?????-###', letters='ABCDE') for i in
+                        range(number_records)]
+        product_desc = product_name
+        product_uom = ['EA' for i in range(number_records)]
+        active_from = [start for i in range(number_records)]
+        active_up = [finish for i in range(number_records)]
+        return product_group_id, product_name, product_desc, product_uom, parent_group_id_, active_from, active_up
+    else:
+        product_group_query = snowflake_query_ctrd_tables(query_name='query_stg_table_entity',
+                                                          entity='itemhierarchylevelmember',
+                                                          number_of_records=str(number_records/2))
+        parent_group_id = product_group_query['HIERARCHYLEVELIDENTIFIER'].tolist()
+        parent_group_id_ = [random.choice(parent_group_id) for i in range(number_records)]
+        start = datetime(1999, 1, 1)
+        finish = datetime(9999, 1, 1)
+        product_group_id = [fake.bothify(text='#########') for i in range(number_records)]
+        product_name = [fake.bothify(text='#############-PRODUCT_TEST-?????-###', letters='ABCDE') for i in
+                        range(number_records)]
+        product_desc = product_name
+        product_uom = ['EA' for i in range(number_records)]
+        active_from = [start for i in range(number_records)]
+        active_up = [finish for i in range(number_records)]
+        return product_group_id, product_name, product_desc, product_uom, parent_group_id_, active_from, active_up
+
+
+def data_generation_create_file_locations(locations_df, number_files, number_records, ingress,
+                                          name_file, columns_position, columns_name, file_header):
+    """
+
+        This function create csv file with data provided by data_locations(number_records)
+
+        :param locations_df:
+        :param number_files:
+        :param number_records:
+        :param ingress:
+        :param name_file:
+        :param columns_position:
+        :param columns_name:
+        :param file_header:
+        :return:
+
+    """
+    for i in range(0, number_files):
+        data = data_locations(number_records)
+        join_location_file_path = os.path.join(ingress, name_file)
+        logger.info(f"{join_location_file_path}{i} file created successfully ")
+        for j in range(0, len(columns_name)):
+            locations_df[file_header[columns_position[j]]] = data[j]
+        logger.info(f'File no: {i + 1} of {number_files}')
+        locations_df.to_csv(join_location_file_path + str(i) + '.csv', encoding='utf-8', index=False)
+
+
+def data_generation_create_file_item_hierarchy_level_members(item_hierarchy_level_members_df, file_header, number_records,
+                                                             number_files, ingress, name_file):
+    """
+
+        This function create csv file with data provided by data_itemhierarchylevelmembers(number_records)
+
+        :param item_hierarchy_level_members_df:
+        :param file_header:
+        :param number_records:
+        :param number_files:
+        :param ingress:
+        :param name_file:
+        :return:
+
+    """
+    for i in range(0, number_files):
+        data = data_itemhierarchylevelmembers(number_records)
+        join_location_file_path = os.path.join(ingress, name_file)
+        logger.info(f"{join_location_file_path}{i} file created successfully ")
+        for j in range(0, len(file_header)):
+            item_hierarchy_level_members_df[file_header[j]] = data[j]
+        logger.info(f'File no: {j + 1} of {number_files}')
+        item_hierarchy_level_members_df.to_csv(join_location_file_path + str(i) + '.csv', encoding='utf-8', index=False)
+
+
+def data_generation_create_file_items(items_df, number_records, file_header,
+                                      number_files, ingress, name_file, columns_position):
+    """
+
+        This function create csv file with data provided by data_item(number_records)
+        :param items_df:
+        :param number_records:
+        :param file_header:
+        :param number_files:
+        :param ingress:
+        :param name_file:
+        :param columns_position:
+        :return:
+
+    """
+    for i in range(0, number_files):
+        data = data_item(number_records)
+        join_location_file_path = os.path.join(ingress, name_file)
+        for j in range(0, len(columns_position)):
+            items_df[file_header[columns_position[j]]] = data[j]
+        logger.info(f"{join_location_file_path}{i} file created successfully ")
+        logger.info(f'File no: {i + 1} of {number_files}')
+        items_df.to_csv(join_location_file_path + str(i) + '.csv', encoding='utf-8', index=False)
+
+
+def data_generation_create_data_main(entity_name: str, number_records: int, number_files):
     """
             This function create csv files and save in an specific folder. We can loop depending of how many files and
             records do you need.
@@ -119,15 +278,23 @@ def data_generation_create_data(entity_name: str, number_records: int, number_fi
     if entity_name_[3] != 'itemlocations':
         if entity_name_[3] == 'locations':
             logger.info("Start location entity file creation")
-            name_location_file = f'locations_ISDM-2021.1.0_{date_time_str}_PSRTesting'
-            locations_df = pd.DataFrame(columns=file_header)
-            for i in range(0, number_files):
-                data = data_locations(number_records)
-                join_location_file_path = os.path.join(ingress,name_location_file)
-                logger.info(f"{join_location_file_path}{i} file created successfully ")
-                for j in range(0, len(columns_name)):
-                    locations_df[file_header[columns_position[j]]] = data[j]
-                locations_df.to_csv(join_location_file_path+str(i)+'.csv', encoding='utf-8', index=False)
+            name_file = f'locations_ISDM-2021.1.0_{date_time_str}_PSRTesting'
+            df = pd.DataFrame(columns=file_header)
+            data_generation_create_file_locations(df, number_files, number_records, ingress,
+                                                  name_file, columns_position, columns_name, file_header)
+        if entity_name_[3] == 'itemhierarchylevelmembers':
+            logger.info("Start itemhierarchylevelmembers entity file creation")
+            name_file = f'itemhierarchylevelmembers_ISDM-2021.1.0_{date_time_str}_PSRTesting'
+            df = pd.DataFrame(columns=file_header)
+            data_generation_create_file_item_hierarchy_level_members(df, file_header, number_records, number_files,
+                                                                     ingress, name_file)
+        if entity_name_[3] == 'items':
+            logger.info("Start items entity file creation")
+            name_file = f'items_ISDM-2021.1.0_{date_time_str}_PSRTesting'
+            df = pd.DataFrame(columns=file_header)
+            data_generation_create_file_items(df, number_records, file_header,
+                                              number_files, ingress, name_file, columns_position)
+
     logger.info(f"\nEntity: {entity_name} \nNumber of records per file: {number_records} \n"
                 f"Number of files: {number_files}.")
     logger.info(f"Files location: {ingress}")
