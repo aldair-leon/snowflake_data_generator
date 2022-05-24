@@ -25,14 +25,47 @@ def data_folder_ingress_processing():
     data_folder_entity = data_folder()
     ingress_folder = os.path.join(data_folder_entity, "ingress")
     processing_folder = os.path.join(data_folder_entity, "processing")
+
+    items_folder_ingress = os.path.join(ingress_folder, "items")
+    items_folder_processing = os.path.join(processing_folder, "items")
+    locations_folder_ingress = os.path.join(ingress_folder, "locations")
+    locations_folder_processing = os.path.join(processing_folder, "locations")
+    itemhierarchylevel_folder_ingress = os.path.join(ingress_folder, "itemhierarchylevelmembers")
+    itemhierarchylevel_folder_processing = os.path.join(processing_folder, "itemhierarchylevelmembers")
+
     exist_ingress_folder = os.path.exists(ingress_folder)
     exist_processing_folder = os.path.exists(processing_folder)
+    exist_items_folder_ingress = os.path.exists(items_folder_ingress)
+    exist_items_folder_processing = os.path.exists(items_folder_processing)
+    exist_locations_folder_ingress = os.path.exists(locations_folder_ingress)
+    exist_locations_folder_processing = os.path.exists(locations_folder_processing)
+    exist_itemhierarchylevel_folder_ingress = os.path.exists(itemhierarchylevel_folder_ingress)
+    exist_itemhierarchylevel_processing = os.path.exists(itemhierarchylevel_folder_processing)
+
     if not exist_ingress_folder:
         os.makedirs(ingress_folder, exist_ok=True)
         logger.info('Creating ingress folder!')
     if not exist_processing_folder:
         os.makedirs(processing_folder, exist_ok=True)
         logger.info('Creating processing folder!')
+    if not exist_items_folder_ingress:
+        os.makedirs(items_folder_ingress, exist_ok=True)
+        logger.info('Creating ingress/items folder!')
+    if not exist_items_folder_processing:
+        os.makedirs(items_folder_processing, exist_ok=True)
+        logger.info('Creating processing/items folder!')
+    if not exist_locations_folder_ingress:
+        os.makedirs(locations_folder_ingress, exist_ok=True)
+        logger.info('Creating ingress/locations folder!')
+    if not exist_locations_folder_processing:
+        os.makedirs(locations_folder_processing, exist_ok=True)
+        logger.info('Creating processing/locations folder!')
+    if not exist_itemhierarchylevel_folder_ingress:
+        os.makedirs(itemhierarchylevel_folder_ingress, exist_ok=True)
+        logger.info('Creating ingress/itemhierarchylevelmembers folder!')
+    if not exist_itemhierarchylevel_processing:
+        os.makedirs(itemhierarchylevel_folder_processing, exist_ok=True)
+        logger.info('Creating processing/itemhierarchylevelmembers folder!')
     else:
         logger.info("Folder paths are correct..")
     return ingress_folder, processing_folder
@@ -165,7 +198,7 @@ def data_item(number_records):
     else:
         product_group_query = snowflake_query_ctrd_tables(query_name='query_stg_table_entity',
                                                           entity='itemhierarchylevelmember',
-                                                          number_of_records=str(number_records/2))
+                                                          number_of_records=str(number_records / 2))
         parent_group_id = product_group_query['HIERARCHYLEVELIDENTIFIER'].tolist()
         parent_group_id_ = [random.choice(parent_group_id) for i in range(number_records)]
         start = datetime(1999, 1, 1)
@@ -199,7 +232,7 @@ def data_generation_create_file_locations(locations_df, number_files, number_rec
     """
     for i in range(0, number_files):
         data = data_locations(number_records)
-        join_location_file_path = os.path.join(ingress, name_file)
+        join_location_file_path = os.path.join(ingress, 'locations', name_file)
         logger.info(f"{join_location_file_path}{i} file created successfully ")
         for j in range(0, len(columns_name)):
             locations_df[file_header[columns_position[j]]] = data[j]
@@ -207,8 +240,8 @@ def data_generation_create_file_locations(locations_df, number_files, number_rec
         locations_df.to_csv(join_location_file_path + str(i) + '.csv', encoding='utf-8', index=False)
 
 
-def data_generation_create_file_item_hierarchy_level_members(item_hierarchy_level_members_df, file_header, number_records,
-                                                             number_files, ingress, name_file):
+def data_generation_create_file_item_hierarchy_level_members(item_hierarchy_level_members_df, file_header,
+                                                             number_records, number_files, ingress, name_file):
     """
 
         This function create csv file with data provided by data_itemhierarchylevelmembers(number_records)
@@ -224,7 +257,7 @@ def data_generation_create_file_item_hierarchy_level_members(item_hierarchy_leve
     """
     for i in range(0, number_files):
         data = data_itemhierarchylevelmembers(number_records)
-        join_location_file_path = os.path.join(ingress, name_file)
+        join_location_file_path = os.path.join(ingress, 'itemhierarchylevelmembers', name_file)
         logger.info(f"{join_location_file_path}{i} file created successfully ")
         for j in range(0, len(file_header)):
             item_hierarchy_level_members_df[file_header[j]] = data[j]
@@ -249,7 +282,7 @@ def data_generation_create_file_items(items_df, number_records, file_header,
     """
     for i in range(0, number_files):
         data = data_item(number_records)
-        join_location_file_path = os.path.join(ingress, name_file)
+        join_location_file_path = os.path.join(ingress, 'items', name_file)
         for j in range(0, len(columns_position)):
             items_df[file_header[columns_position[j]]] = data[j]
         logger.info(f"{join_location_file_path}{i} file created successfully ")

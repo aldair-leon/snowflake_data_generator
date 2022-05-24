@@ -43,6 +43,5 @@ folder = 'processing'
 # env = DEV_PSR (Set as default )
 # """
 
-data_generation_create_data_main('items', 10, 1)
-#azure_blob_upload_files(env)
-
+# data_generation_create_data_main('itemhierarchylevelmembers', 1, 1)
+azure_blob_upload_files(blob_container=env, entity='itemhierarchylevelmembers')

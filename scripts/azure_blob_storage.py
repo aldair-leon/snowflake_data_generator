@@ -61,11 +61,12 @@ def azure_blob_list_file(blob_container: str = 'DEV_PSR', folder_name: str = "pr
         logger.error(e)
 
 
-def azure_blob_upload_files(blob_container: str = 'DEV_PSR', blob_name: str = 'ingress'):
+def azure_blob_upload_files(blob_container: str = 'DEV_PSR', blob_name: str = 'ingress', entity: str = ''):
     """
 
                 This function upload files in a specific blob folder.
 
+                :param entity:
                 :param blob_container -> str
                 :param blob_name -> str
 
@@ -75,8 +76,8 @@ def azure_blob_upload_files(blob_container: str = 'DEV_PSR', blob_name: str = 'i
     sas_container = sas_token[0]
     block_blob_service = sas_token[1]
     data_folder_path = data_folder()
-    data_folder_path_ingress = os.path.join(data_folder_path, 'ingress')
-    data_folder_path_processing = os.path.join(data_folder_path, 'processing')
+    data_folder_path_ingress = os.path.join(data_folder_path, 'ingress', entity)
+    data_folder_path_processing = os.path.join(data_folder_path, 'processing', entity)
     blob_path = azure_blob_list_file(blob_container, blob_name)
     for files in os.listdir(data_folder_path_ingress):
         if blob_name in blob_path:
