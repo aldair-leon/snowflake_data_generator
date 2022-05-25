@@ -7,7 +7,8 @@
 
 from scripts.azure_blob_storage import azure_blob_storage_sas_toke, azure_blob_upload_files, azure_blob_list_file
 from scripts.snowflake_connection import snowflake_query_verify_env, snowflake_query_ctrd_tables
-from scripts.data_generation import data_generation_create_data_main, data_item
+from scripts.data_generation import data_generation_create_data_main, data_item, data_item_locations, \
+    data_inventory_on_hand
 
 entity = 'ITEM'
 env = 'DEV_PSR'
@@ -43,5 +44,6 @@ folder = 'processing'
 # env = DEV_PSR (Set as default )
 # """
 
-# data_generation_create_data_main('itemhierarchylevelmembers', 1, 1)
-azure_blob_upload_files(blob_container=env, entity='itemhierarchylevelmembers')
+# data_generation_create_data_main('itemlocations', 100, 1)
+# azure_blob_upload_files(blob_container=env, entity='itemlocations')
+data_inventory_on_hand(2)

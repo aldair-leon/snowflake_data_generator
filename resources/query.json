@@ -1,7 +1,8 @@
 {
 
    "query_profile":"SELECT CURRENT_USER(),CURRENT_ROLE(),CURRENT_ACCOUNT(),CURRENT_WAREHOUSE(),CURRENT_DATABASE(),CURRENT_SCHEMA()",
-   "query_crtd_table_entity": "SELECT * FROM CRTD_{0} LIMIT {1};",
-   "query_stg_table_entity":"select hierarchylevelidentifier from stg_{0} LIMIT {1};"
+   "query_crtd_table_entity": "SELECT * FROM CRTD_{0} ORDER BY CREATED_DATETIME DESC LIMIT {1};",
+   "query_stg_table_entity":"select hierarchylevelidentifier from STG_{0} ORDER BY CREATED_DATETIME DESC LIMIT {1};",
+   "query_crtd_table_item_locations": "SELECT ITEM_LOC.ITEM,ITEM_LOC.LOCATION, LOC.LOCATIONTYPECODE FROM CRTD_ITEM_LOCATION AS ITEM_LOC JOIN CRTD_LOCATION AS LOC ON ITEM_LOC.LOCATION = LOC.LOCATION WHERE LOC.LOCATIONTYPECODE IN ('STORE', 'DISTRIBUTION_CENTER') AND ITEM_LOC.ITEM IN ({0});"
 
 }

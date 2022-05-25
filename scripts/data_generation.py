@@ -12,7 +12,7 @@ logger = log('DATA GENERATION')
 fake = Faker(["en_US"])
 
 
-def data_folder_ingress_processing():
+def data_folder_ingress_processing(entity):
     """
 
             This function verify and create ingress folder and processing folder, and return abspath of both folders
@@ -26,21 +26,13 @@ def data_folder_ingress_processing():
     ingress_folder = os.path.join(data_folder_entity, "ingress")
     processing_folder = os.path.join(data_folder_entity, "processing")
 
-    items_folder_ingress = os.path.join(ingress_folder, "items")
-    items_folder_processing = os.path.join(processing_folder, "items")
-    locations_folder_ingress = os.path.join(ingress_folder, "locations")
-    locations_folder_processing = os.path.join(processing_folder, "locations")
-    itemhierarchylevel_folder_ingress = os.path.join(ingress_folder, "itemhierarchylevelmembers")
-    itemhierarchylevel_folder_processing = os.path.join(processing_folder, "itemhierarchylevelmembers")
+    entity_folder_ingress = os.path.join(ingress_folder, entity)
+    entity_folder_processing = os.path.join(processing_folder, entity)
 
     exist_ingress_folder = os.path.exists(ingress_folder)
     exist_processing_folder = os.path.exists(processing_folder)
-    exist_items_folder_ingress = os.path.exists(items_folder_ingress)
-    exist_items_folder_processing = os.path.exists(items_folder_processing)
-    exist_locations_folder_ingress = os.path.exists(locations_folder_ingress)
-    exist_locations_folder_processing = os.path.exists(locations_folder_processing)
-    exist_itemhierarchylevel_folder_ingress = os.path.exists(itemhierarchylevel_folder_ingress)
-    exist_itemhierarchylevel_processing = os.path.exists(itemhierarchylevel_folder_processing)
+    exist_items_folder_ingress = os.path.exists(entity_folder_ingress)
+    exist_items_folder_processing = os.path.exists(entity_folder_processing)
 
     if not exist_ingress_folder:
         os.makedirs(ingress_folder, exist_ok=True)
@@ -49,23 +41,11 @@ def data_folder_ingress_processing():
         os.makedirs(processing_folder, exist_ok=True)
         logger.info('Creating processing folder!')
     if not exist_items_folder_ingress:
-        os.makedirs(items_folder_ingress, exist_ok=True)
-        logger.info('Creating ingress/items folder!')
+        os.makedirs(entity_folder_ingress, exist_ok=True)
+        logger.info(f'Creating ingress/{entity} folder!')
     if not exist_items_folder_processing:
-        os.makedirs(items_folder_processing, exist_ok=True)
-        logger.info('Creating processing/items folder!')
-    if not exist_locations_folder_ingress:
-        os.makedirs(locations_folder_ingress, exist_ok=True)
-        logger.info('Creating ingress/locations folder!')
-    if not exist_locations_folder_processing:
-        os.makedirs(locations_folder_processing, exist_ok=True)
-        logger.info('Creating processing/locations folder!')
-    if not exist_itemhierarchylevel_folder_ingress:
-        os.makedirs(itemhierarchylevel_folder_ingress, exist_ok=True)
-        logger.info('Creating ingress/itemhierarchylevelmembers folder!')
-    if not exist_itemhierarchylevel_processing:
-        os.makedirs(itemhierarchylevel_folder_processing, exist_ok=True)
-        logger.info('Creating processing/itemhierarchylevelmembers folder!')
+        os.makedirs(entity_folder_processing, exist_ok=True)
+        logger.info(f'Creating processing/{entity} folder!')
     else:
         logger.info("Folder paths are correct..")
     return ingress_folder, processing_folder
@@ -213,6 +193,112 @@ def data_item(number_records):
         return product_group_id, product_name, product_desc, product_uom, parent_group_id_, active_from, active_up
 
 
+def data_item_locations(number_records):
+    type_list = ['AVAILABLE_FOR_SALE', 'REPLENISHMENT']
+    start = datetime(1999, 1, 1)
+    finish = datetime(9999, 1, 1)
+    if number_records % 2 != 0:
+        number_records_even = number_records + 1
+
+        item_query = snowflake_query_ctrd_tables(query_name='query_crtd_table_entity',
+                                                 entity='item',
+                                                 number_of_records=str(int(number_records_even / 2)))
+        location_query = snowflake_query_ctrd_tables(query_name='query_crtd_table_entity',
+                                                     entity='location',
+                                                     number_of_records=str(int(number_records_even / 2)))
+
+        item = item_query['ITEM'].tolist()
+        location = location_query['LOCATION'].tolist()
+        type = [random.choice(type_list) for i in range(number_records)]
+        active_from = [start for i in range(number_records)]
+        active_up = [finish for i in range(number_records)]
+        minimumdrpqty = [1 for i in range(number_records)]
+        incrementaldrpquantity = [1 for i in range(number_records)]
+        minimummpsquantity = [1 for i in range(number_records)]
+        incrementalmpsquantity = [1 for i in range(number_records)]
+        holdingcost = [1 for i in range(number_records)]
+        orderingoing = [1 for i in range(number_records)]
+        costuom = [15 for i in range(number_records)]
+        unitcost = ['1.99' for i in range(number_records)]
+        unitmargin = ['10.55' for i in range(number_records)]
+        unitprice = [25 for i in range(number_records)]
+
+        return (item, location, type, active_from, active_up,
+                minimumdrpqty, incrementaldrpquantity, minimummpsquantity,
+                incrementalmpsquantity, holdingcost, orderingoing, costuom, unitcost, unitmargin, unitprice)
+
+    else:
+
+        item_query = snowflake_query_ctrd_tables(query_name='query_crtd_table_entity',
+                                                 entity='item',
+                                                 number_of_records=str(int(number_records / 2)))
+        location_query = snowflake_query_ctrd_tables(query_name='query_crtd_table_entity',
+                                                     entity='location',
+                                                     number_of_records=str(int(number_records / 2)))
+        item = [random.choice(item_query['ITEM'].tolist()) for i in range(number_records)]
+        location = [random.choice(location_query['LOCATION'].tolist()) for i in range(number_records)]
+        type = [random.choice(type_list) for i in range(number_records)]
+        active_from = [start for i in range(number_records)]
+        active_up = [finish for i in range(number_records)]
+        minimumdrpqty = [1 for i in range(number_records)]
+        incrementaldrpquantity = [1 for i in range(number_records)]
+        minimummpsquantity = [1 for i in range(number_records)]
+        incrementalmpsquantity = [1 for i in range(number_records)]
+        holdingcost = [1 for i in range(number_records)]
+        orderingoing = [1 for i in range(number_records)]
+        costuom = [15 for i in range(number_records)]
+        unitcost = ['1.99' for i in range(number_records)]
+        unitmargin = ['10.55' for i in range(number_records)]
+        unitprice = [25 for i in range(number_records)]
+        return (item, location, type, active_from, active_up,
+                minimumdrpqty, incrementaldrpquantity, minimummpsquantity,
+                incrementalmpsquantity, holdingcost, orderingoing, costuom, unitcost, unitmargin, unitprice)
+
+
+def data_inventory_on_hand(number_records):
+    item_query = snowflake_query_ctrd_tables(query_name='query_crtd_table_entity',
+                                             entity='item',
+                                             number_of_records=str(number_records))
+    items = item_query['ITEM'].tolist()
+
+    item_loc = snowflake_query_ctrd_tables(query_name='query_crtd_table_item_locations',
+                                           item_list=items,
+                                           number_of_records=str(number_records))
+    product = [random.choice(items) for i in range(number_records)]
+    data = []
+    data_full = []
+    for i in range(0, len(product)):
+        location = item_loc.query(f'ITEM == @product[{i}]')['LOCATION']
+        store = item_loc.query(f'ITEM == @product[{i}]')['LOCATIONTYPECODE']
+        location_ = location.tolist()
+        store_ = store.tolist()
+        if store_:
+            for j in range(len(store_)):
+                quantity = fake.bothify(text='##')
+                unit_of_measure = 'EA'
+                timestamp = fake.date_between()
+                data.append(product[i])
+                data.append(store_[j])
+                data.append(location_[j])
+                data.append(unit_of_measure)
+                data.append(quantity)
+                data.append(timestamp)
+                data.append(store_[j])
+        data_full.append(data)
+    print(data_full)
+            # product.append(product[i])
+            # product.insert(i+1,product[i])
+
+    # for ele in sorted(remove_elements, reverse=True):
+    #     del product[ele]
+
+    # project = store_temp
+    # unit_of_measure = ['EA' for i in range(len(product))]
+    # quantity = [fake.bothify(text='##') for i in range(len(product))]
+    # timestamp = [fake.date_between() for i in range(len(product))]
+    # # print(product, location_temp, unit_of_measure, quantity, timestamp, project, store_temp)
+
+
 def data_generation_create_file_locations(locations_df, number_files, number_records, ingress,
                                           name_file, columns_position, columns_name, file_header):
     """
@@ -290,6 +376,22 @@ def data_generation_create_file_items(items_df, number_records, file_header,
         items_df.to_csv(join_location_file_path + str(i) + '.csv', encoding='utf-8', index=False)
 
 
+def data_generation_create_file_itemlocations(itemlocations_df, number_records, file_header,
+                                              number_files, ingress, name_file, columns_position):
+    """
+
+
+    """
+    for i in range(0, number_files):
+        data = data_item_locations(number_records)
+        join_location_file_path = os.path.join(ingress, 'itemlocations', name_file)
+        for j in range(0, len(columns_position)):
+            itemlocations_df[file_header[columns_position[j]]] = data[j]
+        logger.info(f"{join_location_file_path}{i} file created successfully ")
+        logger.info(f'File no: {i + 1} of {number_files}')
+        itemlocations_df.to_csv(join_location_file_path + str(i) + '.csv', encoding='utf-8', index=False)
+
+
 def data_generation_create_data_main(entity_name: str, number_records: int, number_files):
     """
             This function create csv files and save in an specific folder. We can loop depending of how many files and
@@ -303,30 +405,37 @@ def data_generation_create_data_main(entity_name: str, number_records: int, numb
     time = datetime.now()
     date_time_str = time.strftime("%Y%m%dT%H%M%SZ")
     entity_name_ = data_generation_load_header_columns(entity_name)
-    folder_paths = data_folder_ingress_processing()
+    folder_paths = data_folder_ingress_processing(entity_name)
     ingress = folder_paths[0]
     file_header = entity_name_[0]
     columns_position = entity_name_[1]
     columns_name = entity_name_[2]
-    if entity_name_[3] != 'itemlocations':
-        if entity_name_[3] == 'locations':
-            logger.info("Start location entity file creation")
-            name_file = f'locations_ISDM-2021.1.0_{date_time_str}_PSRTesting'
-            df = pd.DataFrame(columns=file_header)
-            data_generation_create_file_locations(df, number_files, number_records, ingress,
-                                                  name_file, columns_position, columns_name, file_header)
-        if entity_name_[3] == 'itemhierarchylevelmembers':
-            logger.info("Start itemhierarchylevelmembers entity file creation")
-            name_file = f'itemhierarchylevelmembers_ISDM-2021.1.0_{date_time_str}_PSRTesting'
-            df = pd.DataFrame(columns=file_header)
-            data_generation_create_file_item_hierarchy_level_members(df, file_header, number_records, number_files,
-                                                                     ingress, name_file)
-        if entity_name_[3] == 'items':
-            logger.info("Start items entity file creation")
-            name_file = f'items_ISDM-2021.1.0_{date_time_str}_PSRTesting'
-            df = pd.DataFrame(columns=file_header)
-            data_generation_create_file_items(df, number_records, file_header,
-                                              number_files, ingress, name_file, columns_position)
+
+    if entity_name_[3] == 'locations':
+        logger.info("Start locations entity file creation")
+        name_file = f'locations_ISDM-2021.1.0_{date_time_str}_PSRTesting'
+        df = pd.DataFrame(columns=file_header)
+        data_generation_create_file_locations(df, number_files, number_records, ingress,
+                                              name_file, columns_position, columns_name, file_header)
+    if entity_name_[3] == 'itemhierarchylevelmembers':
+        logger.info("Start itemhierarchylevelmembers entity file creation")
+        name_file = f'itemhierarchylevelmembers_ISDM-2021.1.0_{date_time_str}_PSRTesting'
+        df = pd.DataFrame(columns=file_header)
+        data_generation_create_file_item_hierarchy_level_members(df, file_header, number_records, number_files,
+                                                                 ingress, name_file)
+    if entity_name_[3] == 'items':
+        logger.info("Start items entity file creation")
+        name_file = f'items_ISDM-2021.1.0_{date_time_str}_PSRTesting'
+        df = pd.DataFrame(columns=file_header)
+        data_generation_create_file_items(df, number_records, file_header,
+                                          number_files, ingress, name_file, columns_position)
+
+    if entity_name_[3] == 'itemlocations':
+        logger.info("Start itemlocations entity file creation")
+        name_file = f'itemlocations_ISDM-2021.1.0_{date_time_str}_PSRTesting'
+        df = pd.DataFrame(columns=file_header)
+        data_generation_create_file_itemlocations(df, number_records, file_header,
+                                                  number_files, ingress, name_file, columns_position)
 
     logger.info(f"\nEntity: {entity_name} \nNumber of records per file: {number_records} \n"
                 f"Number of files: {number_files}.")

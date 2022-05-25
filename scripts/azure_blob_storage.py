@@ -71,7 +71,7 @@ def azure_blob_upload_files(blob_container: str = 'DEV_PSR', blob_name: str = 'i
                 :param blob_name -> str
 
     """
-    data_folder_ingress_processing()
+    data_folder_ingress_processing(entity)
     sas_token = azure_blob_storage_sas_toke(blob_container)
     sas_container = sas_token[0]
     block_blob_service = sas_token[1]
