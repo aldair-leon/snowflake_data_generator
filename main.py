@@ -44,6 +44,5 @@ folder = 'processing'
 # env = DEV_PSR (Set as default )
 # """
 
-# data_generation_create_data_main('itemlocations', 100, 1)
-# azure_blob_upload_files(blob_container=env, entity='itemlocations')
-data_inventory_on_hand(2)
+data_generation_create_data_main('inventoryonhand', 1000, 1)
+azure_blob_upload_files(blob_container=env, entity='inventoryonhand')

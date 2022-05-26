@@ -256,6 +256,7 @@ def data_item_locations(number_records):
 
 
 def data_inventory_on_hand(number_records):
+    time = datetime(2020, 1, 1)
     item_query = snowflake_query_ctrd_tables(query_name='query_crtd_table_entity',
                                              entity='item',
                                              number_of_records=str(number_records))
@@ -264,39 +265,17 @@ def data_inventory_on_hand(number_records):
     item_loc = snowflake_query_ctrd_tables(query_name='query_crtd_table_item_locations',
                                            item_list=items,
                                            number_of_records=str(number_records))
-    product = [random.choice(items) for i in range(number_records)]
-    data = []
-    data_full = []
-    for i in range(0, len(product)):
-        location = item_loc.query(f'ITEM == @product[{i}]')['LOCATION']
-        store = item_loc.query(f'ITEM == @product[{i}]')['LOCATIONTYPECODE']
-        location_ = location.tolist()
-        store_ = store.tolist()
-        if store_:
-            for j in range(len(store_)):
-                quantity = fake.bothify(text='##')
-                unit_of_measure = 'EA'
-                timestamp = fake.date_between()
-                data.append(product[i])
-                data.append(store_[j])
-                data.append(location_[j])
-                data.append(unit_of_measure)
-                data.append(quantity)
-                data.append(timestamp)
-                data.append(store_[j])
-        data_full.append(data)
-    print(data_full)
-            # product.append(product[i])
-            # product.insert(i+1,product[i])
 
-    # for ele in sorted(remove_elements, reverse=True):
-    #     del product[ele]
-
-    # project = store_temp
-    # unit_of_measure = ['EA' for i in range(len(product))]
-    # quantity = [fake.bothify(text='##') for i in range(len(product))]
-    # timestamp = [fake.date_between() for i in range(len(product))]
-    # # print(product, location_temp, unit_of_measure, quantity, timestamp, project, store_temp)
+    product = (item_loc['ITEM'].tolist())
+    location = (item_loc['LOCATION'].tolist())
+    available = [time for i in range(len(product))]
+    unit_of_measure = ['EA' for i in range(len(product))]
+    quantity = [fake.bothify(text='##') for i in range(len(product))]
+    time = available
+    project = location
+    store = item_loc['LOCATIONTYPECODE'].tolist()
+    print(store)
+    return product, location, available, unit_of_measure, quantity, time, project, store
 
 
 def data_generation_create_file_locations(locations_df, number_files, number_records, ingress,
@@ -392,6 +371,22 @@ def data_generation_create_file_itemlocations(itemlocations_df, number_records, 
         itemlocations_df.to_csv(join_location_file_path + str(i) + '.csv', encoding='utf-8', index=False)
 
 
+def data_generation_create_file_inventory_on_hand(inventoryonhand_df, number_records, file_header,
+                                                  number_files, ingress, name_file, columns_position):
+    """
+
+
+    """
+    for i in range(0, number_files):
+        data = data_inventory_on_hand(number_records)
+        join_location_file_path = os.path.join(ingress, 'inventoryonhand', name_file)
+        for j in range(0, len(columns_position)):
+            inventoryonhand_df[file_header[columns_position[j]]] = data[j]
+        logger.info(f"{join_location_file_path}{i} file created successfully ")
+        logger.info(f'File no: {i + 1} of {number_files}')
+        inventoryonhand_df.to_csv(join_location_file_path + str(i) + '.csv', encoding='utf-8', index=False)
+
+
 def data_generation_create_data_main(entity_name: str, number_records: int, number_files):
     """
             This function create csv files and save in an specific folder. We can loop depending of how many files and
@@ -435,6 +430,13 @@ def data_generation_create_data_main(entity_name: str, number_records: int, numb
         name_file = f'itemlocations_ISDM-2021.1.0_{date_time_str}_PSRTesting'
         df = pd.DataFrame(columns=file_header)
         data_generation_create_file_itemlocations(df, number_records, file_header,
+                                                  number_files, ingress, name_file, columns_position)
+
+    if entity_name_[3] == 'inventoryonhand':
+        logger.info("Start inventoryonhand entity file creation")
+        name_file = f'inventoryonhand_ISDM-2021.1.0_{date_time_str}_PSRTesting'
+        df = pd.DataFrame(columns=file_header)
+        data_generation_create_file_inventory_on_hand(df, number_records, file_header,
                                                   number_files, ingress, name_file, columns_position)
 
     logger.info(f"\nEntity: {entity_name} \nNumber of records per file: {number_records} \n"

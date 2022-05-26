@@ -48,6 +48,11 @@
       {
         "columns_name": ["PRODUCTID", "LOCATION", "AVAILABLEDATE", "UNITOFMEASURE", "QUANTITY", "EXPIRATIONDAY",
           "TIMESTAMP", "PROJECT", "STORE", "ACTIONCODE"
+        ],
+        "columns_position": [0,1,2,3,4,6,7,8],
+
+        "columns_name_data": ["PRODUCTID", "LOCATION", "AVAILABLEDATE", "UNITOFMEASURE", "QUANTITY",
+          "TIMESTAMP", "PROJECT", "STORE"
         ]
       }
     ],
