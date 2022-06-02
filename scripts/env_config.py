@@ -89,7 +89,7 @@ def data_folder() -> str:
 def entity_file() -> str:
     """
 
-                ............
+                This function verify entity.json file
 
     """
     folder_path = env_folder_path()

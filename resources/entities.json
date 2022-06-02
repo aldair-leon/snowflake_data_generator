@@ -29,7 +29,7 @@
         ]
       }
     ],
-      "itemlocations": [
+     "itemlocations": [
       {
         "columns_name": ["PRODUCTID","LOCATION","TYPE","ACTIVEFROM","ACTIVEUPTO","MINIMUMDRPQTY","INCREMENTALDRPQUANTITY","MINIMUMMPSQUANTITY",
           "INCREMENTALMPSQUANTITY","HOLDINGCOST","ORDERINGCOST","COSTUOM","UNITCOST","UNITMARGIN","UNITPRICE","PROCESS_CHANNEL_TYPE",
@@ -60,7 +60,10 @@
       {
         "columns_name": ["PRODUCTID", "LOCATIONID", "TYPE", "QUANTITY", "UNITOFMEASURE", "STARTDATE", "LASTSOLDTIME",
             "SALESREVENUE", "SALESREVENUENOTAX", "CURRENCY"
-        ]
+        ],
+        "columns_position": [],
+        "columns_name_data": ["PRODUCTID", "LOCATIONID", "TYPE", "QUANTITY", "UNITOFMEASURE", "STARTDATE", "LASTSOLDTIME",
+            "SALESREVENUE"]
       }
     ],
       "itemhierarchylevelmembers": [

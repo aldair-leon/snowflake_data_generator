@@ -83,7 +83,7 @@ def snowflake_query_verify_env(env: str = 'DEV_PSR'):
 
 # Query CRTD Tables
 def snowflake_query_ctrd_tables(entity: str = '', query_name: str = 'query_crtd_table_entity',
-                                env: str = 'DEV_PSR', number_of_records: str = '10', item_list=0):
+                                env: str = 'DEV_PSR', number_of_records: str = '10'):
     """
 
                 Execute query into CRTD tables depending on which entity you provide.
@@ -98,11 +98,10 @@ def snowflake_query_ctrd_tables(entity: str = '', query_name: str = 'query_crtd_
 
     """
     query_file = read_query_file()
-    # Line 76 : SELECT * FROM CRTD_{entity} LIMIT 10; --> for testing just query top 10 values
     ctx = snowflake_connection(env)
     cursor = ctx.cursor()
     if query_name != 'query_crtd_table_item_locations':
-        query_crtd_entity = query_file[query_name].format(entity, number_of_records)
+        query_crtd_entity = query_file[query_name].format('HIERARCHYLEVELIDENTIFIER', entity, number_of_records)
         try:
             logger.info('Executing query....{0}'.format(query_crtd_entity))
             execution = cursor.execute(query_crtd_entity)
@@ -116,11 +115,13 @@ def snowflake_query_ctrd_tables(entity: str = '', query_name: str = 'query_crtd_
             logger.error('Verify your query: {0}'.format(query_crtd_entity))
 
     else:
-        item_list_format = ",".join(['%s'] * len(item_list))
-        query_crtd_entity = query_file[query_name].format(item_list_format)
+        # item_list_format = ",".join(['%s'] * len(item_list))
+        query_crtd_entity = query_file[query_name].format(number_of_records)
+
         try:
             logger.info('Executing query....{0}'.format(query_crtd_entity))
-            execution = cursor.execute(query_crtd_entity, (item_list))
+            # execution = cursor.execute(query_crtd_entity, (item_list))
+            execution = cursor.execute(query_crtd_entity)
             result = execution.fetch_pandas_all()
             return result
 

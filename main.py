@@ -10,7 +10,8 @@ from scripts.snowflake_connection import snowflake_query_verify_env, snowflake_q
 from scripts.data_generation import data_generation_create_data_main, data_item, data_item_locations, \
     data_inventory_on_hand
 
-entity = 'ITEM'
+entity = 'inventoryonhand'  # items, locations, itemlocations, inventoryonhand, inventorytransactions,
+# itemhierarchylevelmembers, measurements
 env = 'DEV_PSR'
 folder = 'processing'
 
@@ -44,5 +45,5 @@ folder = 'processing'
 # env = DEV_PSR (Set as default )
 # """
 
-data_generation_create_data_main('inventoryonhand', 1000, 1)
-azure_blob_upload_files(blob_container=env, entity='inventoryonhand')
+# data_generation_create_data_main(entity, 1000000, 1)
+azure_blob_upload_files(blob_container=env, entity=entity)
