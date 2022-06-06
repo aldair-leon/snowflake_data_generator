@@ -303,7 +303,7 @@ def data_generation_create_file_item_hierarchy_level_members(item_hierarchy_leve
         logger.info(f"{join_location_file_path}{i} file created successfully ")
         for j in range(0, len(file_header)):
             item_hierarchy_level_members_df[file_header[j]] = data[j]
-        logger.info(f'File no: {j + 1} of {number_files}')
+        logger.info(f'File no: {i + 1} of {number_files}')
         item_hierarchy_level_members_df.to_csv(join_location_file_path + str(i) + '.csv', encoding='utf-8', index=False)
 
 

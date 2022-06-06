@@ -45,5 +45,5 @@ folder = 'processing'
 # env = DEV_PSR (Set as default )
 # """
 
-# data_generation_create_data_main(entity, 1000000, 1)
+# data_generation_create_data_main(entity, 1000, 2)
 azure_blob_upload_files(blob_container=env, entity=entity)
