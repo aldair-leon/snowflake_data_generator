@@ -9,6 +9,7 @@ import snowflake.connector
 from scripts.env_config import read_env_file, read_query_file
 from snowflake.connector.errors import DatabaseError, ProgrammingError
 from scripts.init_logger import log
+from scripts.list_file_processing import processing_folder_list
 
 # Logger
 logger = log('SNOWFLAKE CTX')
@@ -129,3 +130,29 @@ def snowflake_query_ctrd_tables(entity: str = '', query_name: str = 'query_crtd_
             logger.error(e)
             logger.error('<-- Query syntax error -->')
             logger.error('Verify your query: {0}'.format(query_crtd_entity))
+
+
+# Query STATS Table
+def snowflake_query_stats_table(query_name: str = 'query_ingestion_time',
+                                env: str = 'DEV_PSR', entity: str = 'items'):
+    """
+
+
+    """
+    query_file = read_query_file()
+    ctx = snowflake_connection(env)
+    cursor = ctx.cursor()
+    files = processing_folder_list(entity)
+    file_name_list = ",".join(['%s'] * len(files))
+
+    try:
+        query_stats = query_file[query_name].format(file_name_list)
+        logger.info('Executing query....{0}'.format(query_stats))
+        execution = cursor.execute(query_stats, files)
+        result = execution.fetch_pandas_all()
+        return result
+
+    except ProgrammingError as e:
+        logger.error(e)
+        logger.error('<-- Query syntax error -->')
+        logger.error('Verify your query: {0}'.format(query_file))
