@@ -9,6 +9,10 @@
           "PROCESS_CHANNEL_TYPE", "HANDLINGINSTRUCTIONCODE", "ITEM_ATTR1", "ITEM_ATTR2", "ITEM_ATTR3", "ITEM_ATTR4",
           "ITEM_ATTR5", "ITEM_ATTR6", "ITEM_ATTR7", "ITEM_ATTR8", "ITEM_ATTR9", "ITEM_ATTR10", "ITEM_FLAG1", "ITEM_FLAG2",
           "ITEM_FLAG3", "ITEM_FLAG4", "ITEM_FLAG5", "ITEM_VALUE1", "ITEM_VALUE2", "ITEM_VALUE3", "ITEM_VALUE4", "ITEM_VALUE5"
+        ],
+        "columns_position": [0,1,2,3,4,5,6],
+
+        "columns_name_data": ["PRODUCTID","PRODUCTNAME", "PRODUCTDESC", "PRODUCTUOM", "PRODUCTGROUPID", "ACTIVEFROM", "ACTIVEUPTO"
         ]
       }
     ],
@@ -25,13 +29,18 @@
         ]
       }
     ],
-      "itemlocations": [
+     "itemlocations": [
       {
         "columns_name": ["PRODUCTID","LOCATION","TYPE","ACTIVEFROM","ACTIVEUPTO","MINIMUMDRPQTY","INCREMENTALDRPQUANTITY","MINIMUMMPSQUANTITY",
           "INCREMENTALMPSQUANTITY","HOLDINGCOST","ORDERINGCOST","COSTUOM","UNITCOST","UNITMARGIN","UNITPRICE","PROCESS_CHANNEL_TYPE",
           "ACTIONCODE","SHELFLIFEDURATION","MINIMUMSHELFLIFEDURATION","MINIMUMSHIPSHELFLIFEDUR","SKU_ATTR1","SKU_ATTR2","SKU_ATTR3","SKU_ATTR4","SKU_ATTR5","SKU_ATTR6",
           "SKU_ATTR7","SKU_ATTR8","SKU_ATTR9","SKU_ATTR10","SKU_FLAG1","SKU_FLAG2","SKU_FLAG3","SKU_FLAG4","SKU_FLAG5","SKU_VALUE1",
           "SKU_VALUE2","SKU_VALUE3","SKU_VALUE4","SKU_VALUE5"
+        ],
+        "columns_position": [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14],
+
+        "columns_name_data": ["PRODUCTID","LOCATION","TYPE","ACTIVEFROM","ACTIVEUPTO","MINIMUMDRPQTY","INCREMENTALDRPQUANTITY","MINIMUMMPSQUANTITY",
+          "INCREMENTALMPSQUANTITY","HOLDINGCOST","ORDERINGCOST","COSTUOM","UNITCOST","UNITMARGIN","UNITPRICE"
         ]
       }
     ],
@@ -39,6 +48,11 @@
       {
         "columns_name": ["PRODUCTID", "LOCATION", "AVAILABLEDATE", "UNITOFMEASURE", "QUANTITY", "EXPIRATIONDAY",
           "TIMESTAMP", "PROJECT", "STORE", "ACTIONCODE"
+        ],
+        "columns_position": [0,1,2,3,4,6,7,8],
+
+        "columns_name_data": ["PRODUCTID", "LOCATION", "AVAILABLEDATE", "UNITOFMEASURE", "QUANTITY",
+          "TIMESTAMP", "PROJECT", "STORE"
         ]
       }
     ],
@@ -46,14 +60,20 @@
       {
         "columns_name": ["PRODUCTID", "LOCATIONID", "TYPE", "QUANTITY", "UNITOFMEASURE", "STARTDATE", "LASTSOLDTIME",
             "SALESREVENUE", "SALESREVENUENOTAX", "CURRENCY"
-        ]
+        ],
+        "columns_position": [],
+        "columns_name_data": ["PRODUCTID", "LOCATIONID", "TYPE", "QUANTITY", "UNITOFMEASURE", "STARTDATE", "LASTSOLDTIME",
+            "SALESREVENUE"]
       }
     ],
       "itemhierarchylevelmembers": [
       {
-        "columns_name": ["PRODUCTGROUPID", "PARENTGROUPID", "DESCRIPTION"]
+        "columns_name": ["PRODUCTGROUPID", "PARENTGROUPID", "DESCRIPTION"],
+        "columns_position": [],
+        "columns_name_data": []
       }
     ],
+
         "measurements": [
       {
         "columns_name": ["UNITOFMEASURE","UNITOFMEASURENAME","UNITOFMEASUREDESCR"]

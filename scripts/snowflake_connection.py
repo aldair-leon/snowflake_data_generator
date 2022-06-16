@@ -5,11 +5,11 @@
 
 """
 
-
 import snowflake.connector
 from scripts.env_config import read_env_file, read_query_file
 from snowflake.connector.errors import DatabaseError, ProgrammingError
 from scripts.init_logger import log
+from scripts.list_file_processing import processing_folder_list
 
 # Logger
 logger = log('SNOWFLAKE CTX')
@@ -26,7 +26,7 @@ def snowflake_connection(snowflake_env: str) -> snowflake.connector.connection:
 
     """
     env_cred = read_env_file()
-    type_auth = env_cred['snowflake'][snowflake_env][0]["authenticator"]
+    password = env_cred['snowflake'][snowflake_env][0]["password"]
     user = env_cred['snowflake'][snowflake_env][0]["user"]
     account = env_cred['snowflake'][snowflake_env][0]["account"]
     warehouse = env_cred['snowflake'][snowflake_env][0]["warehouse"]
@@ -35,7 +35,7 @@ def snowflake_connection(snowflake_env: str) -> snowflake.connector.connection:
     role = env_cred['snowflake'][snowflake_env][0]["role"]
     try:
         ctx = snowflake.connector.connect(
-            authenticator=type_auth,
+            password=password,
             role=role,
             user=user,
             account=account,
@@ -83,30 +83,76 @@ def snowflake_query_verify_env(env: str = 'DEV_PSR'):
 
 
 # Query CRTD Tables
-def snowflake_query_ctrd_tables(entity: str, env: str = 'DEV_PSR'):
+def snowflake_query_ctrd_tables(entity: str = '', query_name: str = 'query_crtd_table_entity',
+                                env: str = 'DEV_PSR', number_of_records: str = '10'):
     """
 
                 Execute query into CRTD tables depending on which entity you provide.
                 Queries are define in resources/query.json
 
+                :param len_item_list:
+                :param number_of_records:
+                :param query_name:
                 :param entity: -> str
                 :param env: -> str
                 :return: result -> pandas Data frame
 
     """
     query_file = read_query_file()
-    query_crtd_entity = query_file["query_crtd_table_entity"].format(entity)
-    # Line 76 : SELECT * FROM CRTD_{entity} LIMIT 10; --> for testing just query top 10 values
     ctx = snowflake_connection(env)
     cursor = ctx.cursor()
+    if query_name != 'query_crtd_table_item_locations':
+        query_crtd_entity = query_file[query_name].format('HIERARCHYLEVELIDENTIFIER', entity, number_of_records)
+        try:
+            logger.info('Executing query....{0}'.format(query_crtd_entity))
+            execution = cursor.execute(query_crtd_entity)
+            # result = execution.fetch_pandas_all()
+            result = execution.fetch_pandas_all()
+            return result
+
+        except ProgrammingError as e:
+            logger.error(e)
+            logger.error('<-- Query syntax error -->')
+            logger.error('Verify your query: {0}'.format(query_crtd_entity))
+
+    else:
+        # item_list_format = ",".join(['%s'] * len(item_list))
+        query_crtd_entity = query_file[query_name].format(number_of_records)
+
+        try:
+            logger.info('Executing query....{0}'.format(query_crtd_entity))
+            # execution = cursor.execute(query_crtd_entity, (item_list))
+            execution = cursor.execute(query_crtd_entity)
+            result = execution.fetch_pandas_all()
+            return result
+
+        except ProgrammingError as e:
+            logger.error(e)
+            logger.error('<-- Query syntax error -->')
+            logger.error('Verify your query: {0}'.format(query_crtd_entity))
+
+
+# Query STATS Table
+def snowflake_query_stats_table(query_name: str = 'query_ingestion_time',
+                                env: str = 'DEV_PSR', entity: str = 'items'):
+    """
+
+
+    """
+    query_file = read_query_file()
+    ctx = snowflake_connection(env)
+    cursor = ctx.cursor()
+    files = processing_folder_list(entity)
+    file_name_list = ",".join(['%s'] * len(files))
 
     try:
-        logger.info('Executing query....{0}'.format(query_crtd_entity))
-        execution = cursor.execute(query_crtd_entity)
+        query_stats = query_file[query_name].format(file_name_list)
+        logger.info('Executing query....{0}'.format(query_stats))
+        execution = cursor.execute(query_stats, files)
         result = execution.fetch_pandas_all()
         return result
 
     except ProgrammingError as e:
         logger.error(e)
         logger.error('<-- Query syntax error -->')
-        logger.error('Verify your query: {0}'.format(query_crtd_entity))
+        logger.error('Verify your query: {0}'.format(query_file))

@@ -21,13 +21,13 @@ def env_folder_path() -> str:
 
     """
     verify_path = os.path.exists(os.path.abspath("../snowflake/resources"))
-    #verify_path = os.path.exists(os.path.abspath("../resources"))
+    # verify_path = os.path.exists(os.path.abspath("../resources"))
     if verify_path:
         logger.info('Verify env file...')
     else:
         logger.error('Error env file, please verify your resource file!')
     return os.path.abspath("../snowflake/resources")
-    #return os.path.abspath("../resources")
+    # return os.path.abspath("../resources")
 
 
 # Env json file
@@ -89,7 +89,7 @@ def data_folder() -> str:
 def entity_file() -> str:
     """
 
-                ............
+                This function verify entity.json file
 
     """
     folder_path = env_folder_path()
