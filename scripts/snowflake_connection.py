@@ -26,7 +26,7 @@ def snowflake_connection(snowflake_env: str) -> snowflake.connector.connection:
 
     """
     env_cred = read_env_file()
-    type_auth = env_cred['snowflake'][snowflake_env][0]["authenticator"]
+    password = env_cred['snowflake'][snowflake_env][0]["password"]
     user = env_cred['snowflake'][snowflake_env][0]["user"]
     account = env_cred['snowflake'][snowflake_env][0]["account"]
     warehouse = env_cred['snowflake'][snowflake_env][0]["warehouse"]
@@ -35,7 +35,7 @@ def snowflake_connection(snowflake_env: str) -> snowflake.connector.connection:
     role = env_cred['snowflake'][snowflake_env][0]["role"]
     try:
         ctx = snowflake.connector.connect(
-            authenticator=type_auth,
+            password=password,
             role=role,
             user=user,
             account=account,

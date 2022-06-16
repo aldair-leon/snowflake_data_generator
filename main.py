@@ -41,10 +41,10 @@ from scripts.list_file_processing import *
 # """
 entity = 'locations'  # items, locations, itemlocations, inventoryonhand, inventorytransactions,
 # itemhierarchylevelmembers, measurements
-env = 'DEV_PSR'
+env = 'DEV_PSR_ACCOUNT'
 folder = 'processing'
 # data_generation_create_data_main(entity, 100000, 200)
 # azure_blob_upload_files(blob_container=env, entity=entity)
 
-print(snowflake_query_stats_table(entity='locations'))
+#snowflake_query_stats_table(entity='locations')
 # print(processing_folder_list('items'))
