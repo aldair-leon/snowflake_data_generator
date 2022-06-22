@@ -57,7 +57,7 @@ def snowflake_connection(snowflake_env: str) -> snowflake.connector.connection:
 
 
 # Verify correct snowflake env
-def snowflake_query_verify_env(env: str = 'DEV_PSR'):
+def snowflake_query_verify_env(env: str = 'DEV_PSR_ACCOUNT'):
     """
 
                 Execute query to verify env
@@ -84,7 +84,7 @@ def snowflake_query_verify_env(env: str = 'DEV_PSR'):
 
 # Query CRTD Tables
 def snowflake_query_ctrd_tables(entity: str = '', query_name: str = 'query_crtd_table_entity',
-                                env: str = 'DEV_PSR', number_of_records: str = '10'):
+                                env: str = 'DEV_PSR_ACCOUNT', number_of_records: str = '10'):
     """
 
                 Execute query into CRTD tables depending on which entity you provide.
@@ -134,7 +134,7 @@ def snowflake_query_ctrd_tables(entity: str = '', query_name: str = 'query_crtd_
 
 # Query STATS Table
 def snowflake_query_stats_table(query_name: str = 'query_ingestion_time',
-                                env: str = 'DEV_PSR', entity: str = 'items'):
+                                env: str = 'DEV_PSR_ACCOUNT', entity: str = 'items'):
     """
 
 
@@ -149,6 +149,30 @@ def snowflake_query_stats_table(query_name: str = 'query_ingestion_time',
         query_stats = query_file[query_name].format(file_name_list)
         logger.info('Executing query....{0}'.format(query_stats))
         execution = cursor.execute(query_stats, files)
+        result = execution.fetch_pandas_all()
+        return result
+
+    except ProgrammingError as e:
+        logger.error(e)
+        logger.error('<-- Query syntax error -->')
+        logger.error('Verify your query: {0}'.format(query_file))
+
+
+# Query STATS Table
+def snowflake_query_last_ingestion(query_name: str = 'query_last_ingestion',
+                                   env: str = 'DEV_PSR_ACCOUNT'):
+    """
+
+
+    """
+    query_file = read_query_file()
+    ctx = snowflake_connection(env)
+    cursor = ctx.cursor()
+
+    try:
+        query_stats = query_file[query_name]
+        logger.info('Executing query....{0}'.format(query_stats))
+        execution = cursor.execute(query_stats)
         result = execution.fetch_pandas_all()
         return result
 

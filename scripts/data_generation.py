@@ -95,7 +95,7 @@ def data_locations(number_records: int):
     location_type_options = ['SUPPLIER', 'DISTRIBUTION_CENTER', 'STORE']
     start = datetime(1999, 1, 1)
     finish = datetime(9999, 1, 1)
-    locations = [fake.bothify(text='????-#######', letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ') for i in range(number_records)]
+    locations = [fake.bothify(text='????-#######', letters='ABCDEFGHIJK') for i in range(number_records)]
     locations_name = [fake.company() for i in range(number_records)]
     location_type = [random.choice(location_type_options) for i in range(number_records)]
     country = ['US' for i in range(number_records)]
@@ -124,11 +124,8 @@ def data_itemhierarchylevelmembers(number_records):
 
 
     """
-    if number_records % 2 != 0:
-        number_records_even = number_records + 1
-        parent_group_id = [fake.bothify(text='####-#####-######') for i in range(int(number_records_even / 2))]
-    else:
-        parent_group_id = [fake.bothify(text='####-#####-######') for i in range(int(number_records / 2))]
+
+    parent_group_id = [fake.bothify(text='####-#####-######') for i in range(int(number_records))]
 
     product_group_id = [fake.bothify(text='####-#####-######') for i in range(number_records)]
     description = [fake.company() for i in range(number_records)]
@@ -136,11 +133,12 @@ def data_itemhierarchylevelmembers(number_records):
     return product_group_id, parent_group_id_, description
 
 
-def data_item(number_records):
+def data_item(number_records, product_group_query):
     """
 
         This function generate data for items entity. And return list of data.
 
+        :param product_group_query:
         :param number_records:
         :return: product_group_id
         :return: product_name
@@ -152,15 +150,6 @@ def data_item(number_records):
 
 
     """
-    if number_records % 2 != 0:
-        number_records_even = number_records + 1
-        product_group_query = snowflake_query_ctrd_tables(query_name='query_crtd_table_entity',
-                                                          entity='itemhierarchylevelmember',
-                                                          number_of_records=str(number_records_even / 2))
-    else:
-        product_group_query = snowflake_query_ctrd_tables(query_name='query_crtd_table_entity',
-                                                          entity='itemhierarchylevelmember',
-                                                          number_of_records=str(number_records / 2))
     parent_group_id = product_group_query['HIERARCHYLEVELIDENTIFIER'].tolist()
     parent_group_id_ = [random.choice(parent_group_id) for i in range(number_records)]
     start = datetime(1999, 1, 1)
@@ -175,30 +164,12 @@ def data_item(number_records):
     return product_group_id, product_name, product_desc, product_uom, parent_group_id_, active_from, active_up
 
 
-def data_item_locations(number_records):
+def data_item_locations(number_records, item_query, location_query):
     type_list = ['AVAILABLE_FOR_SALE', 'REPLENISHMENT']
     start = datetime(1999, 1, 1)
     finish = datetime(9999, 1, 1)
-    if number_records % 2 != 0:
-        number_records_even = number_records + 1
-
-        item_query = snowflake_query_ctrd_tables(query_name='query_crtd_table_entity',
-                                                 entity='item',
-                                                 number_of_records=str(int(number_records_even / 2)))
-        location_query = snowflake_query_ctrd_tables(query_name='query_crtd_table_entity',
-                                                     entity='location',
-                                                     number_of_records=str(int(number_records_even / 2)))
-    else:
-
-        item_query = snowflake_query_ctrd_tables(query_name='query_crtd_table_entity',
-                                                 entity='item',
-                                                 number_of_records=str(int(number_records / 2)))
-        location_query = snowflake_query_ctrd_tables(query_name='query_crtd_table_entity',
-                                                     entity='location',
-                                                     number_of_records=str(int(number_records / 2)))
     item_list = item_query['ITEM'].tolist()
     loc_list = location_query['LOCATION'].tolist()
-
     item = [random.choice(item_list) for i in range(number_records)]
     location = [random.choice(loc_list) for i in range(number_records)]
     type = [random.choice(type_list) for i in range(number_records)]
@@ -219,12 +190,8 @@ def data_item_locations(number_records):
             incrementalmpsquantity, holdingcost, orderingoing, costuom, unitcost, unitmargin, unitprice)
 
 
-def data_inventory_on_hand(number_records):
+def data_inventory_on_hand(item_loc):
     time = datetime(2020, 1, 1)
-
-    item_loc = snowflake_query_ctrd_tables(query_name='query_crtd_table_item_locations',
-                                           number_of_records=str(number_records))
-
     product = (item_loc['ITEM'].tolist())
     location = (item_loc['LOCATION'].tolist())
     available = [time for i in range(len(product))]
@@ -236,9 +203,7 @@ def data_inventory_on_hand(number_records):
     return product, location, available, unit_of_measure, quantity, time, project, store
 
 
-def data_inventory_transactions(number_records):
-    item_loc = snowflake_query_ctrd_tables(query_name='query_crtd_table_item_locations',
-                                           number_of_records=str(int(number_records / 4)))
+def data_inventory_transactions(number_records, item_loc):
     item_list = item_loc['ITEM'].tolist()
     loc_list = item_loc['LOCATION'].tolist()
     time = datetime(2020, 1, 1)
@@ -322,8 +287,11 @@ def data_generation_create_file_items(items_df, number_records, file_header,
         :return:
 
     """
+    product_group_query = snowflake_query_ctrd_tables(query_name='query_crtd_table_entity',
+                                                      entity='itemhierarchylevelmember',
+                                                      number_of_records=str(number_records))
     for i in range(0, number_files):
-        data = data_item(number_records)
+        data = data_item(number_records, product_group_query)
         join_location_file_path = os.path.join(ingress, 'items', name_file)
         for j in range(0, len(columns_position)):
             items_df[file_header[columns_position[j]]] = data[j]
@@ -338,8 +306,14 @@ def data_generation_create_file_itemlocations(itemlocations_df, number_records, 
 
 
     """
+    item_query = snowflake_query_ctrd_tables(query_name='query_crtd_table_entity',
+                                             entity='item',
+                                             number_of_records=str(number_records))
+    location_query = snowflake_query_ctrd_tables(query_name='query_crtd_table_entity',
+                                                 entity='location',
+                                                 number_of_records=str(number_records))
     for i in range(0, number_files):
-        data = data_item_locations(number_records)
+        data = data_item_locations(number_records, item_query, location_query)
         join_location_file_path = os.path.join(ingress, 'itemlocations', name_file)
         for j in range(0, len(columns_position)):
             itemlocations_df[file_header[columns_position[j]]] = data[j]
@@ -354,8 +328,10 @@ def data_generation_create_file_inventory_on_hand(inventoryonhand_df, number_rec
 
 
     """
+    item_loc = snowflake_query_ctrd_tables(query_name='query_crtd_table_item_locations',
+                                           number_of_records=str(number_records))
     for i in range(0, number_files):
-        data = data_inventory_on_hand(number_records)
+        data = data_inventory_on_hand(item_loc)
         join_location_file_path = os.path.join(ingress, 'inventoryonhand', name_file)
         for j in range(0, len(columns_position)):
             inventoryonhand_df[file_header[columns_position[j]]] = data[j]
@@ -365,13 +341,15 @@ def data_generation_create_file_inventory_on_hand(inventoryonhand_df, number_rec
 
 
 def data_generation_create_file_inventory_transactions(inventorytransactions_df, number_records, file_header,
-                                                  number_files, ingress, name_file, columns_name):
+                                                       number_files, ingress, name_file, columns_name):
     """
 
 
     """
+    item_loc = snowflake_query_ctrd_tables(query_name='query_crtd_table_item_locations',
+                                           number_of_records=str(int(number_records)))
     for i in range(0, number_files):
-        data = data_inventory_transactions(number_records)
+        data = data_inventory_transactions(number_records, item_loc)
         join_location_file_path = os.path.join(ingress, 'inventorytransactions', name_file)
         for j in range(0, len(columns_name)):
             inventorytransactions_df[file_header[j]] = data[j]
@@ -437,7 +415,7 @@ def data_generation_create_data_main(entity_name: str, number_records: int, numb
         name_file = f'inventorytransactions_ISDM-2021.1.0_{date_time_str}_PSRTesting'
         df = pd.DataFrame(columns=file_header)
         data_generation_create_file_inventory_transactions(df, number_records, file_header,
-                                                      number_files, ingress, name_file, columns_name)
+                                                           number_files, ingress, name_file, columns_name)
 
     logger.info(f"\nEntity: {entity_name} \nNumber of records per file: {number_records} \n"
                 f"Number of files: {number_files}.")
