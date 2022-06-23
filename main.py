@@ -44,8 +44,5 @@ entity = 'inventorytransactions'  # items, locations, itemlocations, inventoryon
 env = 'DEV_PSR_ACCOUNT'
 env_azure = 'DEV_PSR'
 folder = 'processing'
-data_generation_create_data_main(entity, 1000000, 1)
-#azure_blob_upload_files(blob_container=env_azure, entity=entity)
-
-# snowflake_query_stats_table(entity='locations')
-# print(processing_folder_list('items'))
+# data_generation_create_data_main(entity, 1000000, 8)
+azure_blob_upload_files(blob_container=env_azure, entity=entity)
