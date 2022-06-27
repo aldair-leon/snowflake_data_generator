@@ -8,7 +8,7 @@
 import os
 import shutil
 from scripts.data_generation import data_folder_ingress_processing
-from azure.common import AzureHttpError
+from azure.common import AzureHttpError,AzureException
 from azure.storage.blob import BlockBlobService
 from scripts.env_config import read_env_file, data_folder
 from scripts.init_logger import log
@@ -78,16 +78,21 @@ def azure_blob_upload_files(blob_container: str = 'DEV_PSR', blob_name: str = 'i
     data_folder_path = data_folder()
     data_folder_path_ingress = os.path.join(data_folder_path, 'ingress', entity)
     data_folder_path_processing = os.path.join(data_folder_path, 'processing', entity)
-    blob_path = azure_blob_list_file(blob_container, blob_name)
+    # blob_path = azure_blob_list_file(blob_container, blob_name)
+    blob_path = ['ingress']
     for files in os.listdir(data_folder_path_ingress):
         if blob_name in blob_path:
             blob_name_path = os.path.join(blob_name, files)
             file_path = os.path.join(data_folder_path_ingress, files)
-            block_blob_service.create_blob_from_path(container_name=sas_container,
-                                                     blob_name=blob_name_path,
-                                                     file_path=file_path)
-            shutil.move(file_path, data_folder_path_processing)
+            try:
+                block_blob_service.create_blob_from_path(container_name=sas_container,
+                                                         blob_name=blob_name_path,
+                                                         file_path=file_path)
+                shutil.move(file_path, data_folder_path_processing)
 
-            logger.info('<-- Upload file finished -->')
+                logger.info('<-- Upload file finished -->')
+            except AzureException as e:
+                logger.error('<-- Upload Error -->')
+                logger.error(e)
         else:
             logger.error('<-- Path doesnt exist -->')

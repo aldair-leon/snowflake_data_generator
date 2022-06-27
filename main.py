@@ -6,9 +6,7 @@
 """
 
 from scripts.azure_blob_storage import *
-from scripts.snowflake_connection import *
-from scripts.data_generation import *
-from scripts.list_file_processing import *
+from scripts.file_generation import *
 
 # # Verify env
 # """
@@ -39,10 +37,10 @@ from scripts.list_file_processing import *
 # Number of parameters = 1
 # env = DEV_PSR (Set as default )
 # """
-entity = 'inventorytransactions'  # items, locations, itemlocations, inventoryonhand, inventorytransactions,
+entity = 'locations'  # items, locations, itemlocations, inventoryonhand, inventorytransactions,
 # itemhierarchylevelmembers, measurements
 env = 'DEV_PSR_ACCOUNT'
 env_azure = 'DEV_PSR'
 folder = 'processing'
-# data_generation_create_data_main(entity, 1000000, 8)
+data_generation_create_data_main(entity, 2, 1)
 azure_blob_upload_files(blob_container=env_azure, entity=entity)
