@@ -1,21 +1,24 @@
 import pandas as pd
 from scripts.data_generation import data_locations, data_itemhierarchylevelmembers, data_item, data_item_locations, \
-    data_inventory_on_hand, data_inventory_transactions,data_generation_load_header_columns,data_folder_ingress_processing
+    data_inventory_on_hand, data_inventory_transactions, data_generation_load_header_columns, \
+    data_folder_ingress_processing
 import os
 from scripts.init_logger import log
 from datetime import datetime
 from scripts.snowflake_connection import snowflake_query_ctrd_tables
+from scripts.data_error import data_location_error
 
 # Logger
 logger = log('FILE GENERATION')
 
 
 def data_generation_create_file_locations(locations_df, number_files, number_records, ingress,
-                                          name_file, columns_position, columns_name, file_header):
+                                          name_file, columns_position, columns_name, file_header, error_data_rocords):
     """
 
         This function create csv file with data provided by data_locations(number_records)
 
+        :param error_data_rocords:
         :param locations_df:
         :param number_files:
         :param number_records:
@@ -33,8 +36,14 @@ def data_generation_create_file_locations(locations_df, number_files, number_rec
         logger.info(f"{join_location_file_path}{i} file created successfully ")
         for j in range(0, len(columns_name)):
             locations_df[file_header[columns_position[j]]] = data[j]
-        logger.info(f'File no: {i + 1} of {number_files}')
-        locations_df.to_csv(join_location_file_path + str(i) + '.csv', encoding='utf-8', index=False)
+        if error_data_rocords > 0:
+            locations_df = data_location_error(error_data_rocords, file_header, locations_df)
+            logger.info(f'File no: {i + 1} of {number_files}')
+            locations_df.to_csv(join_location_file_path + str(i) + '.csv', encoding='utf-8', index=False)
+        else:
+            logger.info(f'File no: {i + 1} of {number_files}')
+            locations_df.to_csv(join_location_file_path + str(i) + '.csv', encoding='utf-8', index=False)
+
 
 
 def data_generation_create_file_item_hierarchy_level_members(item_hierarchy_level_members_df, file_header,
@@ -149,11 +158,12 @@ def data_generation_create_file_inventory_transactions(inventorytransactions_df,
         del inventorytransactions_df_temp
 
 
-def data_generation_create_data_main(entity_name: str, number_records: int, number_files):
+def data_generation_create_data_main(entity_name: str, number_records: int, number_files, error_data_rocords):
     """
             This function create csv files and save in an specific folder. We can loop depending of how many files and
             records do you need.
 
+            :param error_data_rocords:
             :param entity_name:
             :param number_records:
             :param number_files:
@@ -173,7 +183,8 @@ def data_generation_create_data_main(entity_name: str, number_records: int, numb
         name_file = f'locations_ISDM-2021.1.0_{date_time_str}_PSRTesting'
         df = pd.DataFrame(columns=file_header)
         data_generation_create_file_locations(df, number_files, number_records, ingress,
-                                              name_file, columns_position, columns_name, file_header)
+                                              name_file, columns_position, columns_name, file_header,
+                                              error_data_rocords)
     if entity_name_[3] == 'itemhierarchylevelmembers':
         logger.info("Start itemhierarchylevelmembers entity file creation")
         name_file = f'itemhierarchylevelmembers_ISDM-2021.1.0_{date_time_str}_PSRTesting'
@@ -206,5 +217,6 @@ def data_generation_create_data_main(entity_name: str, number_records: int, numb
                                                            number_files, ingress, name_file, columns_name)
 
     logger.info(f"\nEntity: {entity_name} \nNumber of records per file: {number_records} \n"
-                f"Number of files: {number_files}.")
+                f"Number of files: {number_files} \n"
+                f"Number of error records: {error_data_rocords}")
     logger.info(f"Files location: {ingress}")

@@ -77,6 +77,7 @@ def data_locations(number_records: int):
 
         This function generate data for location entity. And return list of data.
 
+        :param error_data_rocords:
         :param number_records:
         :return: locations
         :return: locations_name
@@ -159,7 +160,11 @@ def data_item(number_records, product_group_query):
     product_uom = ['EA' for i in range(number_records)]
     active_from = [start for i in range(number_records)]
     active_up = [finish for i in range(number_records)]
-    return product_group_id, product_name, product_desc, product_uom, parent_group_id_, active_from, active_up
+    dep = [fake.bothify(text='Department-##', letters='ABCD') for i in range(number_records)]
+    caregory = [fake.bothify(text='Department-##', letters='ABC') for i in range(number_records)]
+    sub_category = caregory
+    price = ['1.99' for i in range(number_records)]
+    return product_group_id, product_name, product_desc, product_uom, parent_group_id_, active_from, active_up, dep, caregory, sub_category, price
 
 
 def data_item_locations(number_records):
