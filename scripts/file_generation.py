@@ -6,7 +6,8 @@ import os
 from scripts.init_logger import log
 from datetime import datetime
 from scripts.snowflake_connection import snowflake_query_ctrd_tables
-from scripts.data_error import data_location_error,data_itemhierarchylevelmembers_error
+from scripts.data_error import data_location_error, data_itemhierarchylevelmembers_error, data_items_error, \
+    data_itemlocation_error
 
 # Logger
 logger = log('FILE GENERATION')
@@ -46,7 +47,8 @@ def data_generation_create_file_locations(locations_df, number_files, number_rec
 
 
 def data_generation_create_file_item_hierarchy_level_members(item_hierarchy_level_members_df, file_header,
-                                                             number_records, number_files, ingress, name_file,error_data_rocords):
+                                                             number_records, number_files, ingress, name_file,
+                                                             error_data_rocords):
     """
 
         This function create csv file with data provided by data_itemhierarchylevelmembers(number_records)
@@ -67,19 +69,23 @@ def data_generation_create_file_item_hierarchy_level_members(item_hierarchy_leve
         for j in range(0, len(file_header)):
             item_hierarchy_level_members_df[file_header[j]] = data[j]
         if error_data_rocords > 0:
-            item_hierarchy_level_members_df = data_itemhierarchylevelmembers_error(error_data_rocords,file_header,item_hierarchy_level_members_df)
+            item_hierarchy_level_members_df = data_itemhierarchylevelmembers_error(error_data_rocords, file_header,
+                                                                                   item_hierarchy_level_members_df)
             logger.info(f'File no: {i + 1} of {number_files}')
-            item_hierarchy_level_members_df.to_csv(join_location_file_path + str(i) + '.csv', encoding='utf-8', index=False)
+            item_hierarchy_level_members_df.to_csv(join_location_file_path + str(i) + '.csv', encoding='utf-8',
+                                                   index=False)
         else:
             logger.info(f'File no: {i + 1} of {number_files}')
-            item_hierarchy_level_members_df.to_csv(join_location_file_path + str(i) + '.csv', encoding='utf-8', index=False)
+            item_hierarchy_level_members_df.to_csv(join_location_file_path + str(i) + '.csv', encoding='utf-8',
+                                                   index=False)
 
 
 def data_generation_create_file_items(items_df, number_records, file_header,
-                                      number_files, ingress, name_file, columns_position):
+                                      number_files, ingress, name_file, columns_position, error_data_rocords):
     """
 
         This function create csv file with data provided by data_item(number_records)
+        :param error_data_rocords:
         :param items_df:
         :param number_records:
         :param file_header:
@@ -96,30 +102,40 @@ def data_generation_create_file_items(items_df, number_records, file_header,
     for i in range(0, number_files):
         data = data_item(number_records, product_group_query)
         join_location_file_path = os.path.join(ingress, 'items', name_file)
+        logger.info(f"{join_location_file_path}{i} file created successfully ")
         for j in range(0, len(columns_position)):
             items_df[file_header[columns_position[j]]] = data[j]
-        logger.info(f"{join_location_file_path}{i} file created successfully ")
-        logger.info(f'File no: {i + 1} of {number_files}')
-        items_df.to_csv(join_location_file_path + str(i) + '.csv', encoding='utf-8', index=False)
+        if error_data_rocords > 0:
+            items_df = data_items_error(error_data_rocords, file_header, items_df)
+            logger.info(f'File no: {i + 1} of {number_files}')
+            items_df.to_csv(join_location_file_path + str(i) + '.csv', encoding='utf-8', index=False)
+        else:
+            logger.info(f'File no: {i + 1} of {number_files}')
+            items_df.to_csv(join_location_file_path + str(i) + '.csv', encoding='utf-8', index=False)
 
 
 def data_generation_create_file_itemlocations(itemlocations_df, number_records, file_header,
-                                              number_files, ingress, name_file, columns_position):
+                                              number_files, ingress, name_file, columns_position, error_data_rocords):
     """
 
 
     """
     total_records_files = number_records * number_files
     data = data_item_locations(total_records_files)
+    join_location_file_path = os.path.join(ingress, 'itemlocations', name_file)
     for j in range(0, len(columns_position)):
         itemlocations_df[file_header[columns_position[j]]] = data[j]
     for i in range(0, number_files):
-        itemlocations_df_temp = itemlocations_df[i * number_records:(i + 1) * number_records]
-        join_location_file_path = os.path.join(ingress, 'itemlocations', name_file)
-        logger.info(f"{join_location_file_path}{i} file created successfully ")
+        itemlocations_df[i * number_records:(i + 1) * number_records]
+    if error_data_rocords > 1:
+        itemlocations_df_temp = data_itemlocation_error(error_data_rocords, file_header, itemlocations_df)
         logger.info(f'File no: {i + 1} of {number_files}')
         itemlocations_df_temp.to_csv(join_location_file_path + str(i) + '.csv', encoding='utf-8', index=False)
         del itemlocations_df_temp
+    else:
+        logger.info(f'File no: {i + 1} of {number_files}')
+        itemlocations_df.to_csv(join_location_file_path + str(i) + '.csv', encoding='utf-8', index=False)
+        del itemlocations_df
 
 
 def data_generation_create_file_inventory_on_hand(inventoryonhand_df, number_records, file_header,
@@ -194,19 +210,20 @@ def data_generation_create_data_main(entity_name: str, number_records: int, numb
         name_file = f'itemhierarchylevelmembers_ISDM-2021.1.0_{date_time_str}_PSRTesting'
         df = pd.DataFrame(columns=file_header)
         data_generation_create_file_item_hierarchy_level_members(df, file_header, number_records, number_files,
-                                                                 ingress, name_file,error_data_rocords)
+                                                                 ingress, name_file, error_data_rocords)
     if entity_name_[3] == 'items':
         logger.info("Start items entity file creation")
         name_file = f'items_ISDM-2021.1.0_{date_time_str}_PSRTesting'
         df = pd.DataFrame(columns=file_header)
         data_generation_create_file_items(df, number_records, file_header,
-                                          number_files, ingress, name_file, columns_position)
+                                          number_files, ingress, name_file, columns_position, error_data_rocords)
     if entity_name_[3] == 'itemlocations':
         logger.info("Start itemlocations entity file creation")
         name_file = f'itemlocations_ISDM-2021.1.0_{date_time_str}_PSRTesting'
         df = pd.DataFrame(columns=file_header)
         data_generation_create_file_itemlocations(df, number_records, file_header,
-                                                  number_files, ingress, name_file, columns_position)
+                                                  number_files, ingress, name_file, columns_position,
+                                                  error_data_rocords)
     if entity_name_[3] == 'inventoryonhand':
         logger.info("Start inventoryonhand entity file creation")
         name_file = f'inventoryonhand_ISDM-2021.1.0_{date_time_str}_PSRTesting'

@@ -168,7 +168,7 @@ def data_item(number_records, product_group_query):
 
 
 def data_item_locations(number_records):
-    type_list = ['AVAILABLE_FOR_SALE', 'REPLENISHMENT']
+    type_list = ['AVAILABLE_FOR_SALE', 'SALE_IGNORE', 'AVAILABLE_FOR_ORDER', 'CONSTRAIN_ORDERS_DC']
     start = datetime(1999, 1, 1)
     finish = datetime(9999, 1, 1)
     item_query = snowflake_query_ctrd_tables(query_name='query_crtd_table_entity',
