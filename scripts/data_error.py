@@ -46,7 +46,7 @@ def data_itemlocation_error(number_of_records, itemlocation_header, df):
     type = 'REPLENISHMENT_'
     start = datetime(2000, 1, 1)
     finish = datetime(1999, 1, 1)
-    for i in range(0, number_of_records + 2):
+    for i in range(0, number_of_records):
         for j in range(0, len(itemlocation_header)):
             if itemlocation_header[j] != 'PRODUCTID':
                 df.loc[i, itemlocation_header[j]] = np.nan

@@ -37,7 +37,7 @@ from scripts.file_generation import *
 # Number of parameters = 1
 # env = DEV_PSR (Set as default )
 # """
-entity = 'itemlocations'  # items, locations, itemlocations, inventoryonhand, inventorytransactions,
+entity = 'inventorytransactions'  # items, locations, itemlocations, inventoryonhand, inventorytransactions,
 # itemhierarchylevelmembers, measurements
 
 env = 'DEV_PSR_ACCOUNT'
@@ -46,7 +46,8 @@ folder = 'processing'
 
 number_of_records = 10
 number_of_files = 1
-number_of_error_records = 5
+number_of_error_records = 0
+
 
 data_generation_create_data_main(entity, number_of_records, number_of_files, number_of_error_records)
 # azure_blob_upload_files(blob_container=env_azure, entity=entity)
