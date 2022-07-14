@@ -171,13 +171,13 @@ def data_generation_create_file_inventory_on_hand(inventoryonhand_df, number_rec
 
 def data_generation_create_file_inventory_transactions(inventorytransactions_df, number_records, file_header,
                                                        number_files, ingress, name_file, columns_name,
-                                                       error_data_rocords):
+                                                       error_data_rocords, transactional_record_days_back):
     """
 
 
     """
     total_records_files = number_records * number_files
-    data = data_inventory_transactions(total_records_files)
+    data = data_inventory_transactions(total_records_files, transactional_record_days_back)
     error_data_rocords = error_data_rocords*number_files
     join_location_file_path = os.path.join(ingress, 'inventorytransactions', name_file)
     for j in range(0, len(columns_name)):
@@ -203,7 +203,7 @@ def data_generation_create_file_inventory_transactions(inventorytransactions_df,
             del inventorytransactions_df_temp
 
 
-def data_generation_create_data_main(entity_name: str, number_records: int, number_files, error_data_rocords):
+def data_generation_create_data_main(entity_name: str, number_records: int, number_files, error_data_rocords, transactional_record_days_back):
     """
             This function create csv files and save in an specific folder. We can loop depending of how many files and
             records do you need.
@@ -262,7 +262,7 @@ def data_generation_create_data_main(entity_name: str, number_records: int, numb
         df = pd.DataFrame(columns=file_header)
         data_generation_create_file_inventory_transactions(df, number_records, file_header,
                                                            number_files, ingress, name_file, columns_name,
-                                                           error_data_rocords)
+                                                           error_data_rocords, transactional_record_days_back)
 
     logger.info(f"\nEntity: {entity_name} \nNumber of records per file: {number_records} \n"
                 f"Number of files: {number_files} \n"

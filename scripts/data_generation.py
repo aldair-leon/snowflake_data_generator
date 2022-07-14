@@ -1,6 +1,7 @@
 import random
 import datetime as dt
 from datetime import datetime
+from datetime import timedelta
 from faker import Faker
 from scripts.env_config import entity_file, data_folder
 from scripts.init_logger import log
@@ -220,16 +221,29 @@ def data_inventory_on_hand(number_records):
     return product, location, available, unit_of_measure, quantity, time, project, store
 
 
-def data_inventory_transactions(number_records):
+def data_inventory_transactions(number_records, transactional_record_days_back):
     item_loc = snowflake_query_ctrd_tables(query_name='query_crtd_table_item_locations',
                                            number_of_records=str(int(number_records)))
-    item_list = item_loc['ITEM'].tolist()
-    loc_list = item_loc['LOCATION'].tolist()
+
     time = dt.datetime.now()
+
+    # The total number of item_locations may be less than
+    # the total number of transaction records requested
+    #
+    item_list = []
+    loc_list = []
+    start_time = []
+    last_sold = []
+    for i in range(number_records):
+        randrow = fake.random_int(min=0, max=len(item_loc.index)-1)
+        item_list.append(item_loc['ITEM'][randrow])
+        loc_list.append(item_loc['LOCATION'][randrow])
+        tran_date = time - timedelta(days=fake.random_int(min=0, max=transactional_record_days_back))
+        start_time.append(tran_date)
+        last_sold.append(tran_date + timedelta(seconds=fake.random_int(min=1, max=86400)))
+
     type = [random.choice(['11', '41']) for i in range(number_records)]
     quantity = [fake.random_int(min=1, max=15) for i in range(number_records)]
     uom = ['EA' for i in range(number_records)]
-    start_time = [time for i in range(number_records)]
-    last_sold = [time for i in range(number_records)]
-    salesrevenue = [fake.bothify(text='##.#') for i in range(number_records)]
+    salesrevenue = [fake.bothify(text='##.##') for i in range(number_records)]
     return item_list, loc_list, type, quantity, uom, start_time, last_sold, salesrevenue
