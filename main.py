@@ -45,7 +45,7 @@ env_azure = 'DEV_PSR'
 folder = 'processing'
 
 number_of_records = 1000000
-number_of_files = 1
+number_of_files = 20
 number_of_error_records = 0
 transactional_record_days_back = 365
 

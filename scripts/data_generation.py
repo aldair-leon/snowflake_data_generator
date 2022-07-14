@@ -234,16 +234,22 @@ def data_inventory_transactions(number_records, transactional_record_days_back):
     loc_list = []
     start_time = []
     last_sold = []
+    type = []
+    quantity = []
+    uom = []
+    salesrevenue = []
+    logger.info('Generating {0} inventory transaction records'.format(number_records))
     for i in range(number_records):
-        randrow = fake.random_int(min=0, max=len(item_loc.index)-1)
-        item_list.append(item_loc['ITEM'][randrow])
-        loc_list.append(item_loc['LOCATION'][randrow])
+        rand_row = fake.random_int(min=0, max=len(item_loc.index)-1)
+        item_list.append(item_loc['ITEM'][rand_row])
+        loc_list.append(item_loc['LOCATION'][rand_row])
         tran_date = time - timedelta(days=fake.random_int(min=0, max=transactional_record_days_back))
         start_time.append(tran_date)
         last_sold.append(tran_date + timedelta(seconds=fake.random_int(min=1, max=86400)))
+        type.append(random.choice(['11', '41']))
+        quantity.append(fake.random_int(min=1, max=15))
+        uom.append('EA')
+        salesrevenue.append(fake.bothify(text='##.##'))
 
-    type = [random.choice(['11', '41']) for i in range(number_records)]
-    quantity = [fake.random_int(min=1, max=15) for i in range(number_records)]
-    uom = ['EA' for i in range(number_records)]
-    salesrevenue = [fake.bothify(text='##.##') for i in range(number_records)]
+    logger.info('finished generating inventory transaction dataset')
     return item_list, loc_list, type, quantity, uom, start_time, last_sold, salesrevenue
