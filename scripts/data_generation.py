@@ -240,12 +240,15 @@ def data_inventory_transactions(number_records, tran_date: datetime):
     salesrevenue = []
     logger.info('Generating {0} inventory transaction records'.format(number_records))
     for i in range(number_records):
-        rand_row = fake.random_int(min=0, max=len(item_loc.index)-1)
-        item_list.append(item_loc['ITEM'][rand_row])
-        loc_list.append(item_loc['LOCATION'][rand_row])
-        start_time.append(tran_date)
-        #last_sold.append(tran_date + timedelta(seconds=fake.random_int(min=1, max=86400)))
-        last_sold.append(tran_date + timedelta(days=i/number_records))
+        item_loc_row = i
+        # Pick a random item_loc_row if the data request row count > total item_locations row count
+        if i >= len(item_loc.index):
+            item_loc_row = fake.random_int(min=0, max=len(item_loc.index)-1)
+
+        item_list.append(item_loc['ITEM'][item_loc_row])
+        loc_list.append(item_loc['LOCATION'][item_loc_row])
+        start_time.append(tran_date.strftime('%Y-%m-%d'))
+        last_sold.append((tran_date + timedelta(days=i/number_records)).strftime('%Y-%m-%d %H:%M:%S.%f')[:-3])
         type.append(random.choice(['11', '41']))
         quantity.append(fake.random_int(min=1, max=15))
         uom.append('EA')

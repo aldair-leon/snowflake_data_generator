@@ -50,7 +50,7 @@ number_of_error_records = 0
 
 # note inventory transaction will generate the above number of records and files for each day in the range below
 transactional_records_start = datetime.strptime('2022-07-01', '%Y-%m-%d')
-transactional_records_end = datetime.strptime('2022-07-14', '%Y-%m-%d')
+transactional_records_end = datetime.strptime('2022-07-15', '%Y-%m-%d')
 
 
 data_generation_create_data_main(entity, number_of_records, number_of_files, number_of_error_records,

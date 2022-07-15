@@ -264,7 +264,7 @@ def data_generation_create_data_main(entity_name: str, number_records: int, numb
 
         for date in [transactional_records_start + timedelta(days=x) for x in
                      range(0, (transactional_records_end - transactional_records_start).days)]:
-            name_file = 'inventorytransactions_ISDM-2021.1.0_{0}_{1}_PSRTesting'.format(date_time_str, date.strftime("%Y%m%dT%H%M%SZ"))
+            name_file = 'inventorytransactions_ISDM-2021.1.0_{0}_PSR{1}'.format(date_time_str, date.strftime("%Y%m%d"))
             data_generation_create_file_inventory_transactions(df, number_records, file_header,
                                                                number_files, ingress, name_file, columns_name,
                                                                error_data_rocords, date)
