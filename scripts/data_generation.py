@@ -221,15 +221,15 @@ def data_inventory_on_hand(number_records):
     return product, location, available, unit_of_measure, quantity, time, project, store
 
 
-def data_inventory_transactions(number_records, transactional_record_days_back):
+def data_inventory_transactions(number_records, tran_date: datetime):
     item_loc = snowflake_query_ctrd_tables(query_name='query_crtd_table_item_locations',
                                            number_of_records=str(int(number_records)))
 
     time = dt.datetime.now()
 
     # The total number of item_locations may be less than
-    # the total number of transaction records requested
-    #
+    # the total number of transaction records requested. Therefore, changing this to
+    # one large for loop, so that all lists are the same length at the end.
     item_list = []
     loc_list = []
     start_time = []
@@ -243,7 +243,6 @@ def data_inventory_transactions(number_records, transactional_record_days_back):
         rand_row = fake.random_int(min=0, max=len(item_loc.index)-1)
         item_list.append(item_loc['ITEM'][rand_row])
         loc_list.append(item_loc['LOCATION'][rand_row])
-        tran_date = time - timedelta(days=fake.random_int(min=0, max=transactional_record_days_back))
         start_time.append(tran_date)
         last_sold.append(tran_date + timedelta(seconds=fake.random_int(min=1, max=86400)))
         type.append(random.choice(['11', '41']))

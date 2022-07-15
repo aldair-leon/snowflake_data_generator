@@ -4,7 +4,7 @@ from scripts.data_generation import data_locations, data_itemhierarchylevelmembe
     data_folder_ingress_processing
 import os
 from scripts.init_logger import log
-from datetime import datetime
+from datetime import datetime, timedelta
 from scripts.snowflake_connection import snowflake_query_ctrd_tables
 from scripts.data_error import data_location_error, data_itemhierarchylevelmembers_error, data_items_error, \
     data_itemlocation_error, data_inventorytransactions_error, data_inventoryonhand_error
@@ -171,13 +171,14 @@ def data_generation_create_file_inventory_on_hand(inventoryonhand_df, number_rec
 
 def data_generation_create_file_inventory_transactions(inventorytransactions_df, number_records, file_header,
                                                        number_files, ingress, name_file, columns_name,
-                                                       error_data_rocords, transactional_record_days_back):
+                                                       error_data_rocords, date : datetime):
     """
 
 
     """
     total_records_files = number_records * number_files
-    data = data_inventory_transactions(total_records_files, transactional_record_days_back)
+
+    data = data_inventory_transactions(total_records_files, date)
     error_data_rocords = error_data_rocords*number_files
     join_location_file_path = os.path.join(ingress, 'inventorytransactions', name_file)
     for j in range(0, len(columns_name)):
@@ -203,7 +204,7 @@ def data_generation_create_file_inventory_transactions(inventorytransactions_df,
             del inventorytransactions_df_temp
 
 
-def data_generation_create_data_main(entity_name: str, number_records: int, number_files, error_data_rocords, transactional_record_days_back):
+def data_generation_create_data_main(entity_name: str, number_records: int, number_files, error_data_rocords, transactional_records_start: datetime, transactional_records_end: datetime):
     """
             This function create csv files and save in an specific folder. We can loop depending of how many files and
             records do you need.
@@ -258,11 +259,15 @@ def data_generation_create_data_main(entity_name: str, number_records: int, numb
                                                       error_data_rocords)
     if entity_name_[3] == 'inventorytransactions':
         logger.info("Start inventorytransactions entity file creation")
-        name_file = f'inventorytransactions_ISDM-2021.1.0_{date_time_str}_PSRTesting'
+
         df = pd.DataFrame(columns=file_header)
-        data_generation_create_file_inventory_transactions(df, number_records, file_header,
-                                                           number_files, ingress, name_file, columns_name,
-                                                           error_data_rocords, transactional_record_days_back)
+
+        for date in [transactional_records_start + timedelta(days=x) for x in
+                     range(0, (transactional_records_end - transactional_records_start).days)]:
+            name_file = 'inventorytransactions_ISDM-2021.1.0_{0}_{1}_PSRTesting'.format(date_time_str, date.strftime("%Y%m%dT%H%M%SZ"))
+            data_generation_create_file_inventory_transactions(df, number_records, file_header,
+                                                               number_files, ingress, name_file, columns_name,
+                                                               error_data_rocords, date)
 
     logger.info(f"\nEntity: {entity_name} \nNumber of records per file: {number_records} \n"
                 f"Number of files: {number_files} \n"
