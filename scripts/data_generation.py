@@ -238,12 +238,15 @@ def data_inventory_transactions(number_records, tran_date: datetime):
     quantity = []
     uom = []
     salesrevenue = []
+    dupwarning = False
     logger.info('Generating {0} inventory transaction records'.format(number_records))
     for i in range(number_records):
         item_loc_row = i
+
         # Pick a random item_loc_row if the data request row count > total item_locations row count
         if i >= len(item_loc.index):
             item_loc_row = fake.random_int(min=0, max=len(item_loc.index)-1)
+            dupwarning = True
 
         item_list.append(item_loc['ITEM'][item_loc_row])
         loc_list.append(item_loc['LOCATION'][item_loc_row])
@@ -255,4 +258,8 @@ def data_inventory_transactions(number_records, tran_date: datetime):
         salesrevenue.append(fake.bothify(text='##.##'))
 
     logger.info('finished generating inventory transaction dataset')
+    if dupwarning:
+        logger.warn('NOTE: There were more inventory_transaction records requested than there were curated item_locations in this customer realm.')
+        logger.warn('It is likely that you will see curation records rejected due to primary key uniqueness constraints.')
+
     return item_list, loc_list, type, quantity, uom, start_time, last_sold, salesrevenue

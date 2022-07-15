@@ -44,15 +44,15 @@ env = 'DEV_PSR_ACCOUNT'
 env_azure = 'DEV_PSR'
 folder = 'processing'
 
-number_of_records = 10000
-number_of_files = 2
+number_of_records = 50000
+number_of_files = 3
 number_of_error_records = 0
 
 # note inventory transaction will generate the above number of records and files for each day in the range below
-transactional_records_start = datetime.strptime('2022-07-01', '%Y-%m-%d')
+transactional_records_start = datetime.strptime('2022-07-14', '%Y-%m-%d')
 transactional_records_end = datetime.strptime('2022-07-15', '%Y-%m-%d')
 
 
 data_generation_create_data_main(entity, number_of_records, number_of_files, number_of_error_records,
                                  transactional_records_start, transactional_records_end)
-# azure_blob_upload_files(blob_container=env_azure, entity=entity)
+azure_blob_upload_files(blob_container=env_azure, entity=entity)
