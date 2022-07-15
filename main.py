@@ -44,8 +44,8 @@ env = 'DEV_PSR_ACCOUNT'
 env_azure = 'DEV_PSR'
 folder = 'processing'
 
-number_of_records = 100000
-number_of_files = 10
+number_of_records = 10000
+number_of_files = 2
 number_of_error_records = 0
 
 # note inventory transaction will generate the above number of records and files for each day in the range below
