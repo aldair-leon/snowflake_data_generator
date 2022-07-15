@@ -126,17 +126,18 @@ def data_generation_create_file_itemlocations(itemlocations_df, number_records, 
     join_location_file_path = os.path.join(ingress, 'itemlocations', name_file)
     for j in range(0, len(columns_position)):
         itemlocations_df[file_header[columns_position[j]]] = data[j]
+
     for i in range(0, number_files):
-        itemlocations_df[i * number_records:(i + 1) * number_records]
         if error_data_rocords > 0:
             itemlocations_df_temp = data_itemlocation_error(error_data_rocords, file_header, itemlocations_df)
             logger.info(f'File no: {i + 1} of {number_files}')
             itemlocations_df_temp.to_csv(join_location_file_path + str(i) + '.csv', encoding='utf-8', index=False)
             del itemlocations_df_temp
         else:
+            itemlocations_df_temp = itemlocations_df[i * number_records:(i + 1) * number_records]
             logger.info(f'File no: {i + 1} of {number_files}')
-            itemlocations_df.to_csv(join_location_file_path + str(i) + '.csv', encoding='utf-8', index=False)
-            del itemlocations_df
+            itemlocations_df_temp.to_csv(join_location_file_path + str(i) + '.csv', encoding='utf-8', index=False)
+            del itemlocations_df_temp
         logger.info(f"{join_location_file_path}{i} file created successfully ")
 
 

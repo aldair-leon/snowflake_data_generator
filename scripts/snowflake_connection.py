@@ -101,7 +101,7 @@ def snowflake_query_ctrd_tables(entity: str = '', query_name: str = 'query_crtd_
     query_file = read_query_file()
     ctx = snowflake_connection(env)
     cursor = ctx.cursor()
-    if query_name != 'query_crtd_table_item_locations':
+    if query_name != 'query_crtd_table_item_locations' and query_name != 'query_items_locations_join':
         query_crtd_entity = query_file[query_name].format('HIERARCHYLEVELIDENTIFIER', entity, number_of_records)
         try:
             logger.info('Executing query....{0}'.format(query_crtd_entity))

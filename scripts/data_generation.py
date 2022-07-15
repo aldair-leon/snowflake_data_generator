@@ -172,22 +172,12 @@ def data_item_locations(number_records):
     type_list = ['AVAILABLE_FOR_SALE', 'SALE_IGNORE', 'AVAILABLE_FOR_ORDER', 'CONSTRAIN_ORDERS_DC']
     start = datetime(1999, 1, 1)
     finish = datetime(9999, 1, 1)
-    item_query = snowflake_query_ctrd_tables(query_name='query_crtd_table_entity',
-                                             entity='item',
-                                             number_of_records=str(number_records))
-    location_query = snowflake_query_ctrd_tables(query_name='query_crtd_table_entity',
-                                                 entity='location',
-                                                 number_of_records=str(number_records))
-    item_list = item_query['ITEM'].tolist()
-    loc_list = location_query['LOCATION'].tolist()
-    item = []
-    location = []
-    for i in range(0, len(loc_list)):
-        if len(item) == number_records:
-            break
-        for j in range(0, len(item_list)):
-            item.append(item_list[j])
-            location.append(loc_list[i])
+
+    item_location_query = snowflake_query_ctrd_tables(query_name='query_items_locations_join',
+                                           number_of_records=str(int(number_records)))
+    item = item_location_query["ITEM"].tolist()
+    location = item_location_query["LOCATION"].tolist()
+
     type = [random.choice(type_list) for i in range(number_records)]
     active_from = [start for i in range(number_records)]
     active_up = [finish for i in range(number_records)]
