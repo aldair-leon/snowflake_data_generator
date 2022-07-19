@@ -37,7 +37,7 @@ from scripts.file_generation import *
 # Number of parameters = 1
 # env = DEV_PSR (Set as default )
 # """
-entity = 'itemlocations'  # items, locations, itemlocations, inventoryonhand, inventorytransactions,
+entity = 'inventoryonhand'  # items, locations, itemlocations, inventoryonhand, inventorytransactions,
 # itemhierarchylevelmembers, measurements
 
 env = 'DEV_PSR_ACCOUNT'
@@ -45,7 +45,7 @@ env_azure = 'DEV_PSR'
 folder = 'processing'
 
 number_of_records = 1000000
-number_of_files = 3
+number_of_files = 1
 number_of_error_records = 0
 
 # note inventory transaction will generate the above number of records and files for each day in the range below

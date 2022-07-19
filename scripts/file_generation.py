@@ -143,13 +143,13 @@ def data_generation_create_file_itemlocations(itemlocations_df, number_records, 
 
 def data_generation_create_file_inventory_on_hand(inventoryonhand_df, number_records, file_header,
                                                   number_files, ingress, name_file, columns_position,
-                                                  error_data_rocords):
+                                                  error_data_rocords, tran_date: datetime):
     """
 
 
     """
     total_records_files = number_records * number_files
-    data = data_inventory_on_hand(total_records_files)
+    data = data_inventory_on_hand(total_records_files, tran_date)
     error_data_rocords = error_data_rocords * number_files
     join_location_file_path = os.path.join(ingress, 'inventoryonhand', name_file)
     for j in range(0, len(columns_position)):
@@ -255,9 +255,14 @@ def data_generation_create_data_main(entity_name: str, number_records: int, numb
         logger.info("Start inventoryonhand entity file creation")
         name_file = f'inventoryonhand_ISDM-2021.1.0_{date_time_str}_PSRTesting'
         df = pd.DataFrame(columns=file_header)
-        data_generation_create_file_inventory_on_hand(df, number_records, file_header,
+
+        for date in [transactional_records_start + timedelta(days=x) for x in
+                     range(0, (transactional_records_end - transactional_records_start).days)]:
+            name_file = f'inventoryonhand_ISDM-2021.1.0_{date_time_str}_PSR{date.strftime("%Y%m%d")}'
+            data_generation_create_file_inventory_on_hand(df, number_records, file_header,
                                                       number_files, ingress, name_file, columns_position,
-                                                      error_data_rocords)
+                                                      error_data_rocords, date)
+
     if entity_name_[3] == 'inventorytransactions':
         logger.info("Start inventorytransactions entity file creation")
 

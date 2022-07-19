@@ -196,18 +196,43 @@ def data_item_locations(number_records):
             incrementalmpsquantity, holdingcost, orderingoing, costuom, unitcost, unitmargin, unitprice)
 
 
-def data_inventory_on_hand(number_records):
+def data_inventory_on_hand(number_records, tran_date: datetime):
     time = dt.datetime.now()
     item_loc = snowflake_query_ctrd_tables(query_name='query_crtd_table_item_locations',
                                            number_of_records=str(number_records))
-    product = (item_loc['ITEM'].tolist())
-    location = (item_loc['LOCATION'].tolist())
-    available = [time for i in range(len(product))]
-    unit_of_measure = ['EA' for i in range(len(product))]
-    quantity = [fake.bothify(text='##') for i in range(len(product))]
-    time = available
-    project = location
-    store = item_loc['LOCATIONTYPECODE'].tolist()
+
+    product = []
+    location = []
+    available = []
+    unit_of_measure = []
+    quantity = []
+    time = []
+    project = []
+    store = []
+    dupwarning = False
+    for i in range(number_records):
+        item_loc_row = i
+
+        # Pick a random item_loc_row if the data request row count > total item_locations row count
+        if i >= len(item_loc.index):
+            item_loc_row = fake.random_int(min=0, max=len(item_loc.index) - 1)
+            dupwarning = True
+
+        product.append(item_loc['ITEM'][item_loc_row])
+        location.append(item_loc['LOCATION'][item_loc_row])
+        project.append(item_loc['LOCATION'][item_loc_row])
+        store.append(item_loc['LOCATIONTYPECODE'][item_loc_row])
+        quantity.append(fake.bothify(text='##'))
+        time.append((tran_date + timedelta(days=i/number_records)).strftime('%Y-%m-%d %H:%M:%S.%f')[:-3])
+        available.append((tran_date + timedelta(days=i/number_records)).strftime('%Y-%m-%d %H:%M:%S.%f')[:-3])
+        unit_of_measure.append('EA')
+
+    logger.info('finished generating inventory transaction dataset')
+    if dupwarning:
+        logger.warn(
+            'NOTE: There were more item_on_hand records requested than there were curated item_locations in this customer realm.')
+        logger.warn(
+            'It is likely that you will see curation records rejected due to primary key uniqueness constraints.')
     return product, location, available, unit_of_measure, quantity, time, project, store
 
 
