@@ -90,24 +90,28 @@ def daily_transaction_loop():
     high_file_count = 10
 
     for date in [start_date + timedelta(days=x) for x in range(0, (end_date - start_date).days)]:
-
+        logger.info('Processing transactions for {0}'.format(date))
         number_of_files = fake.random_int(min=low_file_count, max=high_file_count)
         transactional_records_start = date
         transactional_records_end = date + timedelta(days=1)
 
         if date.weekday() == 6:
+            logger.info("It's a Sunday. Adding some master data updates to the mix")
             data_generation_create_data_main("items", 50, 1,
                                              number_of_error_records, transactional_records_start,
                                              transactional_records_end)
             azure_blob_upload_files(blob_container=env_azure, entity="items")
+
             data_generation_create_data_main("locations", 50, 1,
                                              number_of_error_records, transactional_records_start,
                                              transactional_records_end)
             azure_blob_upload_files(blob_container=env_azure, entity="locations")
+
             data_generation_create_data_main("itemlocations", 2500, 1,
                                              number_of_error_records, transactional_records_start,
                                              transactional_records_end)
             azure_blob_upload_files(blob_container=env_azure, entity="itemlocations")
+
 
         data_generation_create_data_main("inventorytransactions", number_of_records, number_of_files,
                                          number_of_error_records, transactional_records_start,
@@ -119,4 +123,4 @@ def daily_transaction_loop():
         azure_blob_upload_files(blob_container=env_azure, entity="inventoryonhand")
 
 
-one_entity_only()
+daily_transaction_loop()
