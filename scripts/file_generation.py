@@ -149,6 +149,7 @@ def data_generation_create_file_inventory_on_hand(inventoryonhand_df, number_rec
     """
     total_records_files = number_records * number_files
     data = data_inventory_on_hand(total_records_files)
+    error_data_rocords = error_data_rocords * number_files
     join_location_file_path = os.path.join(ingress, 'inventoryonhand', name_file)
     for j in range(0, len(columns_position)):
         inventoryonhand_df[file_header[columns_position[j]]] = data[j]
@@ -177,6 +178,7 @@ def data_generation_create_file_inventory_transactions(inventorytransactions_df,
     """
     total_records_files = number_records * number_files
     data = data_inventory_transactions(total_records_files)
+    error_data_rocords = error_data_rocords*number_files
     join_location_file_path = os.path.join(ingress, 'inventorytransactions', name_file)
     for j in range(0, len(columns_name)):
         inventorytransactions_df[file_header[j]] = data[j]
@@ -264,5 +266,5 @@ def data_generation_create_data_main(entity_name: str, number_records: int, numb
 
     logger.info(f"\nEntity: {entity_name} \nNumber of records per file: {number_records} \n"
                 f"Number of files: {number_files} \n"
-                f"Number of error records: {error_data_rocords}")
+                f"Number of error records in all the batch: {error_data_rocords*number_files}")
     logger.info(f"Files location: {ingress}")

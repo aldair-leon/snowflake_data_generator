@@ -159,7 +159,7 @@ def snowflake_query_stats_table(query_name: str = 'query_ingestion_time',
 
 
 # Query STATS Table
-def snowflake_query_last_ingestion(query_name: str = 'query_last_ingestion',
+def snowflake_query_update_records(query_name: str = 'query_inventory_transaction_update',
                                    env: str = 'DEV_PSR_ACCOUNT'):
     """
 

@@ -43,9 +43,11 @@ entity = 'inventorytransactions'  # items, locations, itemlocations, inventoryon
 env = 'DEV_PSR_ACCOUNT'
 env_azure = 'DEV_PSR'
 folder = 'processing'
+
 number_of_records = 10
 number_of_files = 1
 number_of_error_records = 0
+
 
 data_generation_create_data_main(entity, number_of_records, number_of_files, number_of_error_records)
 # azure_blob_upload_files(blob_container=env_azure, entity=entity)
