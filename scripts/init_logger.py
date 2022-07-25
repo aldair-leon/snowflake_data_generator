@@ -11,6 +11,12 @@ import os
 
 # Logger
 def log(logger_name: str) -> logging:
+    """
+        Logger format
+
+    :param logger_name:
+    :return:
+    """
     str(os.path.basename(__file__))
     logger = logging.getLogger(logger_name)
     if not logger.handlers:

@@ -61,7 +61,7 @@
         "columns_name": ["PRODUCTID", "LOCATIONID", "TYPE", "QUANTITY", "UNITOFMEASURE", "STARTDATE", "LASTSOLDTIME",
             "SALESREVENUE", "SALESREVENUENOTAX", "CURRENCY"
         ],
-        "columns_position": [],
+        "columns_position": [0,1,2,3,4,5,6,7],
         "columns_name_data": ["PRODUCTID", "LOCATIONID", "TYPE", "QUANTITY", "UNITOFMEASURE", "STARTDATE", "LASTSOLDTIME",
             "SALESREVENUE"]
       }
@@ -69,8 +69,8 @@
       "itemhierarchylevelmembers": [
       {
         "columns_name": ["PRODUCTGROUPID", "PARENTGROUPID", "DESCRIPTION"],
-        "columns_position": [],
-        "columns_name_data": []
+        "columns_position": [0,1,2],
+        "columns_name_data": ["PRODUCTGROUPID", "PARENTGROUPID", "DESCRIPTION"]
       }
     ],
         "measurements": [

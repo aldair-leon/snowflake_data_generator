@@ -136,6 +136,7 @@ def snowflake_query_ctrd_tables(entity: str = '', query_name: str = 'query_crtd_
 def snowflake_query_stats_table(query_name: str = 'query_ingestion_time',
                                 env: str = 'DEV_PSR_ACCOUNT', entity: str = 'items'):
     """
+            Query STATS Tabla
 
 
     """
@@ -158,11 +159,11 @@ def snowflake_query_stats_table(query_name: str = 'query_ingestion_time',
         logger.error('Verify your query: {0}'.format(query_file))
 
 
-# Query STATS Table
+# Query inventory transaction/inventory On hand Table
 def snowflake_query_update_records(query_name: str = 'query_inventory_transaction_update',
                                    env: str = 'DEV_PSR_ACCOUNT'):
     """
-
+            Query inventory Transaction or Inventory On Hand
 
     """
     query_file = read_query_file()
