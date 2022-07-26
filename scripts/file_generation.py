@@ -77,7 +77,7 @@ class FileGeneration:
     def data_generation_item_loc_combinations(self):
         if self.entity_name == 'itemlocations':
             total_records_files = self.number_records * self.number_files
-            error_data_rocords = self.error_data_rocords * self.number_files
+            error_data_rocords = self.error_data_records * self.number_files
             data = data_item_locations(total_records_files)
             join_location_file_path = os.path.join(self.ingress, self.entity_name, self.name_file)
             for j in range(0, len(self.columns_position)):
@@ -95,11 +95,11 @@ class FileGeneration:
                     logger.info(f'File no: {i + 1} of {self.number_files}')
                     self.df[i * self.number_records:(i + 1) * self.number_records].to_csv(
                         join_location_file_path + str(i) + '.csv', encoding='utf-8', index=False)
-                logger.info(f"{join_location_file_path}{i} file created successfully ")
-                logger.info(f"\n \t\t<---PROCESS COMPLETE--->"
-                            f"\nEntity: {self.entity_name} \nNumber of records per file: {self.number_records} \n"
-                            f"Number of files: {self.number_files} \n"
-                            f"Number of error records in all the batch: {self.error_data_records * self.number_files}")
+            logger.info(f"{join_location_file_path}{i} file created successfully ")
+            logger.info(f"\n \t\t<---PROCESS COMPLETE--->"
+                        f"\nEntity: {self.entity_name} \nNumber of records per file: {self.number_records} \n"
+                        f"Number of files: {self.number_files} \n"
+                        f"Number of error records in all the batch: {self.error_data_records * self.number_files}")
         else:
             logger.info('\n\t<-----------------------------WARNING !--------------------------------------->'
                         '\nPlease enter the correct entity name, this function only accept -> itemlocations')
