@@ -6,6 +6,7 @@ from scripts.env_config import entity_file, data_folder
 from scripts.init_logger import log
 import os
 from scripts.snowflake_connection import snowflake_query_ctrd_tables
+from datetime import timedelta
 
 # Logger
 logger = log('DATA GENERATION')
@@ -201,31 +202,78 @@ def data_item_locations(number_records):
             incrementalmpsquantity, holdingcost, orderingoing, costuom, unitcost, unitmargin, unitprice)
 
 
-def data_inventory_on_hand(number_records):
-    time = dt.datetime.now()
+def data_inventory_on_hand(number_records, tran_date: datetime = dt.datetime.now()):
     item_loc = snowflake_query_ctrd_tables(query_name='query_crtd_table_item_locations',
                                            number_of_records=str(number_records))
-    product = (item_loc['ITEM'].tolist())
-    location = (item_loc['LOCATION'].tolist())
-    available = [time for i in range(len(product))]
-    unit_of_measure = ['EA' for i in range(len(product))]
-    quantity = [fake.bothify(text='##') for i in range(len(product))]
-    time = available
-    project = location
-    store = item_loc['LOCATIONTYPECODE'].tolist()
+    product = []
+    location = []
+    available = []
+    unit_of_measure = []
+    quantity = []
+    time = []
+    project = []
+    store = []
+    dupwarning = False
+    for i in range(number_records):
+        item_loc_row = i
+
+        # Pick a random item_loc_row if the data request row count > total item_locations row count
+        if i >= len(item_loc.index):
+            item_loc_row = fake.random_int(min=0, max=len(item_loc.index) - 1)
+            dupwarning = True
+
+        product.append(item_loc['ITEM'][item_loc_row])
+        location.append(item_loc['LOCATION'][item_loc_row])
+        project.append(item_loc['LOCATION'][item_loc_row])
+        store.append(item_loc['LOCATIONTYPECODE'][item_loc_row])
+        quantity.append(fake.bothify(text='##'))
+        time.append((tran_date + timedelta(days=i / number_records)).strftime('%Y-%m-%d %H:%M:%S.%f')[:-3])
+        available.append((tran_date + timedelta(days=i / number_records)).strftime('%Y-%m-%d %H:%M:%S.%f')[:-3])
+        unit_of_measure.append('EA')
+
+    logger.info('finished generating inventory transaction dataset')
+    if dupwarning:
+        logger.warn(
+            'NOTE: There were more item_on_hand records requested than there were curated item_locations in this '
+            'customer realm.')
+        logger.warn(
+            'It is likely that you will see curation records rejected due to primary key uniqueness constraints.')
     return product, location, available, unit_of_measure, quantity, time, project, store
 
 
-def data_inventory_transactions(number_records):
+def data_inventory_transactions(number_records, tran_date: datetime = dt.datetime.now()):
     item_loc = snowflake_query_ctrd_tables(query_name='query_crtd_table_item_locations',
                                            number_of_records=str(int(number_records)))
-    item_list = item_loc['ITEM'].tolist()
-    loc_list = item_loc['LOCATION'].tolist()
-    time = dt.datetime.now()
-    type = [random.choice(['11', '41']) for i in range(number_records)]
-    quantity = [fake.random_int(min=1, max=15) for i in range(number_records)]
-    uom = ['EA' for i in range(number_records)]
-    start_time = [time for i in range(number_records)]
-    last_sold = [time for i in range(number_records)]
-    salesrevenue = [fake.bothify(text='##.#') for i in range(number_records)]
+    item_list = []
+    loc_list = []
+    start_time = []
+    last_sold = []
+    type = []
+    quantity = []
+    uom = []
+    salesrevenue = []
+    dupwarning = False
+    logger.info('Generating {0} inventory transaction records'.format(number_records))
+    for i in range(number_records):
+        item_loc_row = i
+        if i >= len(item_loc.index):
+            item_loc_row = fake.random_int(min=0, max=len(item_loc.index) - 1)
+            dupwarning = True
+        item_list.append(item_loc['ITEM'][item_loc_row])
+        loc_list.append(item_loc['LOCATION'][item_loc_row])
+        start_time.append(tran_date.strftime('%Y-%m-%d'))
+        last_sold.append((tran_date + timedelta(days=i / number_records)).strftime('%Y-%m-%d %H:%M:%S.%f')[:-3])
+        type.append(random.choice(['11', '41']))
+        quantity.append(fake.random_int(min=1, max=15))
+        uom.append('EA')
+        salesrevenue.append(fake.bothify(text='##.##'))
+
+    logger.info('finished generating inventory transaction dataset')
+    if dupwarning:
+        logger.warn(
+            'NOTE: There were more inventory_transaction records requested than there were curated item_locations in '
+            'this customer realm.')
+        logger.warn(
+            'It is likely that you will see curation records rejected due to primary key uniqueness constraints.')
+
     return item_list, loc_list, type, quantity, uom, start_time, last_sold, salesrevenue
