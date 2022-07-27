@@ -1,7 +1,6 @@
 import dash
 import dash_bootstrap_components as dbc
 from dash import html
-from scripts.snowflake_connection import snowflake_query_last_ingestion
 from dash import dcc
 from dash.dependencies import Input, Output
 import plotly.graph_objs as go
@@ -14,7 +13,7 @@ app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 app = dash.Dash(__name__, )
 
-last_ingestion = snowflake_query_last_ingestion()
+
 
 
 app.layout = html.Div([
@@ -32,7 +31,7 @@ app.layout = html.Div([
             ])
         ], className='one-half column title_color', id='title'),
         html.Div([
-            html.H6('Last Ingestion: '+str(last_ingestion['TS'][0]))
+            html.H6('Last Ingestion: TEST')
 
         ], className='one-third column title_color', id='title1')
     ], id='header', className='row flex-display', style={'margin-bottom': '25px'}),

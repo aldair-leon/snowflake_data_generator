@@ -216,12 +216,9 @@ def data_inventory_on_hand(number_records, tran_date: datetime = dt.datetime.now
     dupwarning = False
     for i in range(number_records):
         item_loc_row = i
-
-        # Pick a random item_loc_row if the data request row count > total item_locations row count
         if i >= len(item_loc.index):
             item_loc_row = fake.random_int(min=0, max=len(item_loc.index) - 1)
             dupwarning = True
-
         product.append(item_loc['ITEM'][item_loc_row])
         location.append(item_loc['LOCATION'][item_loc_row])
         project.append(item_loc['LOCATION'][item_loc_row])
@@ -230,7 +227,6 @@ def data_inventory_on_hand(number_records, tran_date: datetime = dt.datetime.now
         time.append((tran_date + timedelta(days=i / number_records)).strftime('%Y-%m-%d %H:%M:%S.%f')[:-3])
         available.append((tran_date + timedelta(days=i / number_records)).strftime('%Y-%m-%d %H:%M:%S.%f')[:-3])
         unit_of_measure.append('EA')
-
     logger.info('finished generating inventory transaction dataset')
     if dupwarning:
         logger.warn(
@@ -267,7 +263,6 @@ def data_inventory_transactions(number_records, tran_date: datetime = dt.datetim
         quantity.append(fake.random_int(min=1, max=15))
         uom.append('EA')
         salesrevenue.append(fake.bothify(text='##.##'))
-
     logger.info('finished generating inventory transaction dataset')
     if dupwarning:
         logger.warn(
@@ -275,5 +270,4 @@ def data_inventory_transactions(number_records, tran_date: datetime = dt.datetim
             'this customer realm.')
         logger.warn(
             'It is likely that you will see curation records rejected due to primary key uniqueness constraints.')
-
     return item_list, loc_list, type, quantity, uom, start_time, last_sold, salesrevenue
