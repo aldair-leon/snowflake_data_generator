@@ -1,4 +1,6 @@
 import pandas as pd
+import asyncio
+import time
 from scripts.data_generation import data_locations, data_itemhierarchylevelmembers, data_item, data_item_locations, \
     data_inventory_on_hand, data_inventory_transactions, data_generation_load_header_columns, \
     data_folder_ingress_processing
@@ -33,7 +35,7 @@ class FileGenerationData:
         self.columns_name = entity_name_[2]
         self.name_file = f'{self.entity_name}_ISDM-2021.1.0_{date_time_str}_PSRTesting'
         self.df = pd.DataFrame(columns=self.file_header)
-        logger.info("Start locations entity file creation")
+        logger.info(f"Start {self.entity_name} entity file creation")
 
     def data_generation_master_data(self):
         if self.entity_name == 'items' or self.entity_name == 'locations' or self.entity_name == 'itemhierarchylevelmembers':
@@ -154,7 +156,8 @@ class FileGenerationHistoricalData:
         self.total_records = total_records
         self.total_errors = total_errors
 
-    def historical_data_inventoryOnhand(self):
+    async def historical_data_inventoryOnhand(self):
+
         entity_name = 'inventoryonhand'
         time = datetime.now()
         date_time_str = time.strftime("%Y%m%dT%H%M%SZ")
@@ -171,6 +174,48 @@ class FileGenerationHistoricalData:
             name_file = f'inventoryonhand_ISDM-2021.1.0_{date_time_str}_PSR{date.strftime("%Y%m%d")}'
             join_location_file_path = os.path.join(ingress, entity_name, name_file)
             data = data_inventory_on_hand(total_records_files)
+            for j in range(0, len(columns_position)):
+                df[file_header[columns_position[j]]] = data[j]
+            await asyncio.sleep(0.1)
+            if total_error_data > 0:
+                df_error = data_inventoryonhand_error(total_error_data, file_header, df)
+                for i in range(0, self.number_files):
+                    df_temp = df_error[
+                              i * self.total_records:(i + 1) * self.total_records]
+                    df_temp.to_csv(join_location_file_path + str(i) + '.csv', encoding='utf-8',
+                                   index=False)
+                    logger.info(f"{join_location_file_path}{i} file created successfully ")
+                    logger.info(f'File no: {i + 1} of {self.number_files}')
+            else:
+                for i in range(0, self.number_files):
+                    df_temp = df[i * self.total_records:(i + 1) * self.total_records]
+                    df_temp.to_csv(join_location_file_path + str(i) + '.csv', encoding='utf-8',
+                                   index=False)
+                    logger.info(f'File no: {i + 1} of {self.number_files}')
+                    logger.info(f"{join_location_file_path}{i} file created successfully ")
+        logger.info(f"\n \t\t<---PROCESS COMPLETE--->"
+                    f"\nEntity: {entity_name} \nNumber of records per file: {self.total_records} \n"
+                    f"Number of files per day: {self.number_files} \n"
+                    f"Range of date: From {self.data_start.strftime('%Y-%m-%d')} To {self.date_finish.strftime('%Y-%m-%d')}\n"
+                    f"Number of error per day: {total_error_data}")
+
+    async def historical_data_inventoryTransaction(self):
+        entity_name = 'inventorytransactions'
+        time = datetime.now()
+        date_time_str = time.strftime("%Y%m%dT%H%M%SZ")
+        entity_name_ = data_generation_load_header_columns(entity_name)
+        folder_paths = data_folder_ingress_processing(entity_name)
+        ingress = folder_paths[0]
+        file_header = entity_name_[0]
+        columns_position = entity_name_[1]
+        total_records_files = self.total_records * self.number_files
+        total_error_data = self.total_errors * self.number_files
+        df = pd.DataFrame(columns=file_header)
+        await asyncio.sleep(0.1)
+        for date in [self.data_start + timedelta(days=x) for x in range(0, (self.date_finish - self.data_start).days)]:
+            name_file = f'inventorytransactions_ISDM-2021.1.0_{date_time_str}_PSR{date.strftime("%Y%m%d")}'
+            join_location_file_path = os.path.join(ingress, entity_name, name_file)
+            data = data_inventory_transactions(total_records_files)
             for j in range(0, len(columns_position)):
                 df[file_header[columns_position[j]]] = data[j]
             if total_error_data > 0:
@@ -195,14 +240,7 @@ class FileGenerationHistoricalData:
                     f"Range of date: From {self.data_start.strftime('%Y-%m-%d')} To {self.date_finish.strftime('%Y-%m-%d')}\n"
                     f"Number of error per day: {total_error_data}")
 
-    # def historical_data_inventoryTransaction(self):
-    #     entity_name = 'inventorytransactions'
-    #     entity_name_ = data_generation_load_header_columns(entity_name)
-    #     folder_paths = data_folder_ingress_processing(entity_name)
-    #     ingress = folder_paths[0]
-    #     file_header = entity_name_[0]
-    #     columns_position = entity_name_[1]
-    #     columns_name = entity_name_[2]
-    #     total_records_files = self.number_records * self.number_files
-    #     total_error_data = self.error_data_records * self.number_files
-    #     join_location_file_path = os.path.join(self.ingress, entity_name, self.name_file)
+    async def historical_data(self):
+        task1 = asyncio.create_task(self.historical_data_inventoryOnhand())
+        task2 = asyncio.create_task(self.historical_data_inventoryTransaction())
+        await asyncio.gather(task1, task2)
