@@ -211,13 +211,13 @@ class FileGenerationHistoricalData:
         total_records_files = self.total_records * self.number_files
         total_error_data = self.total_errors * self.number_files
         df = pd.DataFrame(columns=file_header)
-        await asyncio.sleep(0.1)
         for date in [self.data_start + timedelta(days=x) for x in range(0, (self.date_finish - self.data_start).days)]:
             name_file = f'inventorytransactions_ISDM-2021.1.0_{date_time_str}_PSR{date.strftime("%Y%m%d")}'
             join_location_file_path = os.path.join(ingress, entity_name, name_file)
             data = data_inventory_transactions(total_records_files)
             for j in range(0, len(columns_position)):
                 df[file_header[columns_position[j]]] = data[j]
+            await asyncio.sleep(0.1)
             if total_error_data > 0:
                 df_error = data_inventoryonhand_error(total_error_data, file_header, df)
                 for i in range(0, self.number_files):
