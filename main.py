@@ -8,7 +8,6 @@
 from scripts.file_generation import FileGenerationData, FileGenerationHistoricalData
 from datetime import datetime
 
-
 '''
         
                                 Data creation for all the entities Master and Transactional 
@@ -53,6 +52,6 @@ transactional_records_start = datetime.strptime('2022-07-03', '%Y-%m-%d')
 transactional_records_end = datetime.strptime('2022-07-04', '%Y-%m-%d')
 
 historical = FileGenerationHistoricalData(date_start=transactional_records_start,
-                                          date_finish=transactional_records_end, number_files=2, total_errors=0,
-                                          total_records=100000)
-historical.historical_data()
+                                          date_finish=transactional_records_end)
+historical.historical_data(number_files_Onhand=2, total_records_Onhand=2, total_errors_Onhand=0, number_files_Transac=2,
+                           total_records_Transac=2, total_errors_Transac=0)
