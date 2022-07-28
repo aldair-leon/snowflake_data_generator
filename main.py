@@ -7,8 +7,7 @@
 
 from scripts.file_generation import FileGenerationData, FileGenerationHistoricalData
 from datetime import datetime
-import asyncio
-import time
+
 
 '''
         
@@ -39,28 +38,21 @@ data_batch = FileGenerationData(entity_name,
                                 error_data_records,
                                 env)  # 1
 
-data_batch.data_generation()  # 2
+# data_batch.data_generation()  # 2
 # data_batch.data_generation_master_data()            # 3
 # data_batch.data_generation_item_loc_combinations()  # 4
 # data_batch.data_generation_transactional()          # 5
 
 
-'''
-        
-        
+'''        
                                 Historical data only for transactional entities
-        
-        
+
 '''
 
-
-transactional_records_start = datetime.strptime('2022-07-14', '%Y-%m-%d')
-transactional_records_end = datetime.strptime('2022-07-18', '%Y-%m-%d')
-
+transactional_records_start = datetime.strptime('2022-07-03', '%Y-%m-%d')
+transactional_records_end = datetime.strptime('2022-07-04', '%Y-%m-%d')
 
 historical = FileGenerationHistoricalData(date_start=transactional_records_start,
-                                          date_finish=transactional_records_end, number_files=1, total_errors=0,
-                                          total_records=10)
-
-
-asyncio.run(historical.historical_data())
+                                          date_finish=transactional_records_end, number_files=2, total_errors=0,
+                                          total_records=100000)
+historical.historical_data()

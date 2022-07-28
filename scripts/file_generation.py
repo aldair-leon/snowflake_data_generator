@@ -1,6 +1,4 @@
 import pandas as pd
-import asyncio
-import time
 from scripts.data_generation import data_locations, data_itemhierarchylevelmembers, data_item, data_item_locations, \
     data_inventory_on_hand, data_inventory_transactions, data_generation_load_header_columns, \
     data_folder_ingress_processing
@@ -156,7 +154,7 @@ class FileGenerationHistoricalData:
         self.total_records = total_records
         self.total_errors = total_errors
 
-    async def historical_data_inventoryOnhand(self):
+    def historical_data_inventoryOnhand(self):
 
         entity_name = 'inventoryonhand'
         time = datetime.now()
@@ -176,7 +174,6 @@ class FileGenerationHistoricalData:
             data = data_inventory_on_hand(total_records_files)
             for j in range(0, len(columns_position)):
                 df[file_header[columns_position[j]]] = data[j]
-            await asyncio.sleep(0.1)
             if total_error_data > 0:
                 df_error = data_inventoryonhand_error(total_error_data, file_header, df)
                 for i in range(0, self.number_files):
@@ -199,7 +196,7 @@ class FileGenerationHistoricalData:
                     f"Range of date: From {self.data_start.strftime('%Y-%m-%d')} To {self.date_finish.strftime('%Y-%m-%d')}\n"
                     f"Number of error per day: {total_error_data}")
 
-    async def historical_data_inventoryTransaction(self):
+    def historical_data_inventoryTransaction(self):
         entity_name = 'inventorytransactions'
         time = datetime.now()
         date_time_str = time.strftime("%Y%m%dT%H%M%SZ")
@@ -217,7 +214,6 @@ class FileGenerationHistoricalData:
             data = data_inventory_transactions(total_records_files)
             for j in range(0, len(columns_position)):
                 df[file_header[columns_position[j]]] = data[j]
-            await asyncio.sleep(0.1)
             if total_error_data > 0:
                 df_error = data_inventoryonhand_error(total_error_data, file_header, df)
                 for i in range(0, self.number_files):
@@ -240,7 +236,6 @@ class FileGenerationHistoricalData:
                     f"Range of date: From {self.data_start.strftime('%Y-%m-%d')} To {self.date_finish.strftime('%Y-%m-%d')}\n"
                     f"Number of error per day: {total_error_data}")
 
-    async def historical_data(self):
-        task1 = asyncio.create_task(self.historical_data_inventoryOnhand())
-        task2 = asyncio.create_task(self.historical_data_inventoryTransaction())
-        await asyncio.gather(task1, task2)
+    def historical_data(self):
+        self.historical_data_inventoryOnhand()
+        self.historical_data_inventoryTransaction()
