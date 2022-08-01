@@ -26,14 +26,19 @@ def data_folder_ingress_processing(entity: str):
     data_folder_entity = data_folder()
     ingress_folder = os.path.join(data_folder_entity, "ingress")
     processing_folder = os.path.join(data_folder_entity, "processing")
+    delta_folder = os.path.join(data_folder_entity, "delta")
 
     entity_folder_ingress = os.path.join(ingress_folder, entity)
     entity_folder_processing = os.path.join(processing_folder, entity)
+    entity_folder_delta = os.path.join(delta_folder, entity)
 
     exist_ingress_folder = os.path.exists(ingress_folder)
     exist_processing_folder = os.path.exists(processing_folder)
+    exist_delta_folder = os.path.exists(delta_folder)
+
     exist_entity_folder_ingress = os.path.exists(entity_folder_ingress)
     exist_entity_folder_processing = os.path.exists(entity_folder_processing)
+    exist_processing_delta = os.path.exists(entity_folder_delta)
 
     if not exist_ingress_folder:
         os.makedirs(ingress_folder, exist_ok=True)
@@ -41,15 +46,21 @@ def data_folder_ingress_processing(entity: str):
     if not exist_processing_folder:
         os.makedirs(processing_folder, exist_ok=True)
         logger.info('Creating processing folder!')
+    if not exist_delta_folder:
+        os.makedirs(delta_folder, exist_ok=True)
+        logger.info('Creating delta folder!')
     if not exist_entity_folder_ingress:
         os.makedirs(entity_folder_ingress, exist_ok=True)
         logger.info(f'Creating ingress/{entity} folder!')
     if not exist_entity_folder_processing:
         os.makedirs(entity_folder_processing, exist_ok=True)
         logger.info(f'Creating processing/{entity} folder!')
+    if not exist_processing_delta:
+        os.makedirs(entity_folder_delta, exist_ok=True)
+        logger.info(f'Creating processing/{entity} folder!')
     else:
         logger.info("Folder paths are correct..")
-    return ingress_folder, processing_folder
+    return ingress_folder, processing_folder, delta_folder
 
 
 def data_generation_load_header_columns(entity_name: str):

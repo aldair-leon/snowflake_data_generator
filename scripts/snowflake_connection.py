@@ -161,7 +161,7 @@ def snowflake_query_stats_table(query_name: str = 'query_ingestion_time',
 
 # Query inventory transaction/inventory On hand Table
 def snowflake_query_update_records(query_name: str = 'query_inventory_transaction_update',
-                                   env: str = 'DEV_PSR_ACCOUNT'):
+                                   env: str = 'DEV_PSR_ACCOUNT', number_of_records=1):
     """
             Query inventory Transaction or Inventory On Hand
 
@@ -171,9 +171,10 @@ def snowflake_query_update_records(query_name: str = 'query_inventory_transactio
     cursor = ctx.cursor()
 
     try:
-        query_stats = query_file[query_name]
-        logger.info('Executing query....{0}'.format(query_stats))
+
+        query_stats = query_file[query_name].format(number_of_records)
         execution = cursor.execute(query_stats)
+        logger.info('Executing query....{0}'.format(query_stats))
         result = execution.fetch_pandas_all()
         return result
 
