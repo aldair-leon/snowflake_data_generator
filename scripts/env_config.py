@@ -20,13 +20,13 @@ def env_folder_path() -> str:
                 This function verify if snowflake/resources directory exist.
 
     """
-    verify_path = os.path.exists(os.path.abspath("../snowflake/resources"))
+    verify_path = os.path.exists(os.path.abspath("../snowflake_data_generator/resources"))
     # verify_path = os.path.exists(os.path.abspath("../resources"))
     if verify_path:
         logger.info('Verify env file...')
     else:
         logger.error('Error env file, please verify your resource file!')
-    return os.path.abspath("../snowflake/resources")
+    return os.path.abspath("../snowflake_data_generator/resources")
     # return os.path.abspath("../resources")
 
 
@@ -75,11 +75,11 @@ def data_folder() -> str:
                 This function verify if snowflake/data file exist and return abspath
 
     """
-    verify_path = os.path.exists(os.path.abspath("../snowflake/data"))
+    verify_path = os.path.exists(os.path.abspath("../snowflake_data_generator/data"))
     # verify_path = os.path.exists(os.path.abspath("../data"))
     if verify_path:
         logger.info('Verify data folder...')
-        return os.path.abspath("../snowflake/data")
+        return os.path.abspath("../snowflake_data_generator/data")
         # return os.path.abspath("../data")
     else:
         logger.error('Error data folder doesnt exist, please verify your path!')
