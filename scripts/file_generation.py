@@ -31,7 +31,7 @@ class FileGenerationData:
         self.file_header = entity_name_[0]
         self.columns_position = entity_name_[1]
         self.columns_name = entity_name_[2]
-        self.name_file = f'{self.entity_name}_ISDM-2021.1.0_{date_time_str}_PSRTesting'
+        self.name_file = f'{self.entity_name}_{date_time_str}_PSRTesting'
         self.df = pd.DataFrame(columns=self.file_header)
         logger.info(f"Start {self.entity_name} entity file creation")
 
@@ -166,7 +166,7 @@ class FileGenerationHistoricalData:
         df = pd.DataFrame(columns=file_header)
 
         for date in [self.data_start + timedelta(days=x) for x in range(0, (self.date_finish - self.data_start).days)]:
-            name_file = f'inventoryonhand_ISDM-2021.1.0_{date_time_str}_PSR{date.strftime("%Y%m%d")}'
+            name_file = f'inventoryonhand_{date_time_str}_PSR{date.strftime("%Y%m%d")}'
             join_location_file_path = os.path.join(ingress, entity_name, name_file)
             data = data_inventory_on_hand(total_records_files)
             for j in range(0, len(columns_position)):
@@ -206,7 +206,7 @@ class FileGenerationHistoricalData:
         total_error_data = total_errors_Transac * number_files_Transac
         df = pd.DataFrame(columns=file_header)
         for date in [self.data_start + timedelta(days=x) for x in range(0, (self.date_finish - self.data_start).days)]:
-            name_file = f'inventorytransactions_ISDM-2021.1.0_{date_time_str}_PSR{date.strftime("%Y%m%d")}'
+            name_file = f'inventorytransactions_{date_time_str}_PSR{date.strftime("%Y%m%d")}'
             join_location_file_path = os.path.join(ingress, entity_name, name_file)
             data = data_inventory_transactions(total_records_files)
             for j in range(0, len(columns_position)):

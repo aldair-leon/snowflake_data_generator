@@ -7,6 +7,7 @@
 
 from scripts.file_generation import FileGenerationData, FileGenerationHistoricalData
 from datetime import datetime
+from scripts.azure_blob_storage import azure_blob_upload_files
 
 '''
         
@@ -25,11 +26,12 @@ from datetime import datetime
 
 '''
 
-entity_name = 'inventoryonhand'
-number_records = 100
+entity_name = 'inventorytransactions'
+number_records = 100000
 number_files = 1
 error_data_records = 0
-env = 'DEV_PSR_ACCOUNT'
+env = 'DEV_PSR_ACCOUNT'  # DEV_PSR_ACCOUNT_EU --> Dedicated env
+env_blob_containe = 'DEV_PSR'  # DEV_PSR_EU --> Dedicated env
 
 data_batch = FileGenerationData(entity_name,
                                 number_records,
@@ -42,16 +44,17 @@ data_batch = FileGenerationData(entity_name,
 # data_batch.data_generation_item_loc_combinations()  # 4
 # data_batch.data_generation_transactional()          # 5
 
+# azure_blob_upload_files(blob_container=env_blob_containe, entity=entity_name)
 
 '''        
                                 Historical data only for transactional entities
 
 '''
 
-transactional_records_start = datetime.strptime('2022-07-03', '%Y-%m-%d')
-transactional_records_end = datetime.strptime('2022-07-04', '%Y-%m-%d')
-
-historical = FileGenerationHistoricalData(date_start=transactional_records_start,
-                                          date_finish=transactional_records_end)
-historical.historical_data(number_files_Onhand=1, total_records_Onhand=1, total_errors_Onhand=0,
-                           number_files_Transac=0, total_records_Transac=0, total_errors_Transac=0)
+# transactional_records_start = datetime.strptime('2022-07-03', '%Y-%m-%d')
+# transactional_records_end = datetime.strptime('2022-07-04', '%Y-%m-%d')
+#
+# historical = FileGenerationHistoricalData(date_start=transactional_records_start,
+#                                           date_finish=transactional_records_end)
+# historical.historical_data(number_files_Onhand=1, total_records_Onhand=1, total_errors_Onhand=0,
+#                            number_files_Transac=0, total_records_Transac=0, total_errors_Transac=0)
