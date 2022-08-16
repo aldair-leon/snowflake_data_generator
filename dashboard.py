@@ -8,13 +8,9 @@ import pandas as pd
 import time
 import sys
 
-
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 app = dash.Dash(__name__, )
-
-
-
 
 app.layout = html.Div([
     html.Div([
