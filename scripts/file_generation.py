@@ -69,6 +69,7 @@ class FileGenerationData:
                         f"\nEntity: {self.entity_name} \nNumber of records per file: {self.number_records} \n"
                         f"Number of files: {self.number_files} \n"
                         f"Number of error records in all the batch: {self.error_data_records * self.number_files}")
+            return join_location_file_path
         else:
             logger.info('\n\t<-----------------------------WARNING !--------------------------------------->'
                         '\nPlease enter the correct entity name this function only accept -> items, locations or '
@@ -100,6 +101,7 @@ class FileGenerationData:
                         f"\nEntity: {self.entity_name} \nNumber of records per file: {self.number_records} \n"
                         f"Number of files: {self.number_files} \n"
                         f"Number of error records in all the batch: {self.error_data_records * self.number_files}")
+            return join_location_file_path
         else:
             logger.info('\n\t<-----------------------------WARNING !--------------------------------------->'
                         '\nPlease enter the correct entity name, this function only accept -> itemlocations')
@@ -109,7 +111,6 @@ class FileGenerationData:
             total_records_files = self.number_records * self.number_files
             error_data_records = self.error_data_records * self.number_files
             join_location_file_path = os.path.join(self.ingress, self.entity_name, self.name_file)
-
             if self.entity_name == 'inventorytransactions':
                 data = data_inventory_transactions(total_records_files)
             if self.entity_name == 'inventoryonhand':
@@ -139,6 +140,7 @@ class FileGenerationData:
                         f"\nEntity: {self.entity_name} \nNumber of records per file: {self.number_records} \n"
                         f"Number of files: {self.number_files} \n"
                         f"Number of error records in all the batch: {self.error_data_records * self.number_files}")
+            return join_location_file_path
         else:
             logger.info('\n\t<-----------------------------WARNING !--------------------------------------->'
                         '\nPlease enter the correct entity name, this function only accept -> inventoryonhand  or '
@@ -233,7 +235,7 @@ class FileGenerationHistoricalData:
                     f"Range of date: From {self.data_start.strftime('%Y-%m-%d')} To {self.date_finish.strftime('%Y-%m-%d')}\n"
                     f"Number of error per day: {total_error_data}")
 
-    def historical_data(self, number_files_Onhand, total_records_Onhand, total_errors_Onhand,number_files_Transac,
+    def historical_data(self, number_files_Onhand, total_records_Onhand, total_errors_Onhand, number_files_Transac,
                         total_records_Transac, total_errors_Transac):
         self.historical_data_inventoryOnhand(number_files_Onhand, total_records_Onhand, total_errors_Onhand)
         self.historical_data_inventoryTransaction(number_files_Transac, total_records_Transac, total_errors_Transac)

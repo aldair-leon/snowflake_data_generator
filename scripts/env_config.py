@@ -102,3 +102,10 @@ def entity_file() -> str:
 
     else:
         logger.error('Error Loading entity file!')
+
+
+# Env options
+
+def env_options():
+    env = read_env_file()
+    return list(env['snowflake'].keys()), list(env['blob_storage'].keys())
