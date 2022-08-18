@@ -77,10 +77,12 @@ def azure_blob_upload_files(blob_container: str = 'DEV_PSR', blob_name: str = 'i
     block_blob_service = sas_token[1]
     data_folder_path = data_folder()
     data_folder_path_ingress = os.path.join(data_folder_path, 'ingress', entity)
+    print(data_folder_path_ingress)
     data_folder_path_processing = os.path.join(data_folder_path, 'processing', entity)
     # blob_path = azure_blob_list_file(blob_container, blob_name)
     blob_path = ['ingress']
     for files in os.listdir(data_folder_path_ingress):
+        #print(files)
         if blob_name in blob_path:
             blob_name_path = os.path.join(blob_name, files)
             file_path = os.path.join(data_folder_path_ingress, files)

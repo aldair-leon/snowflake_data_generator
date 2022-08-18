@@ -57,7 +57,7 @@ def snowflake_connection(snowflake_env: str) -> snowflake.connector.connection:
 
 
 # Verify correct snowflake env
-def snowflake_query_verify_env(env: str = 'DEV_PSR_ACCOUNT'):
+def snowflake_query_verify_env(env: str = ''):
     """
 
                 Execute query to verify env
@@ -84,7 +84,7 @@ def snowflake_query_verify_env(env: str = 'DEV_PSR_ACCOUNT'):
 
 # Query CRTD Tables
 def snowflake_query_ctrd_tables(entity: str = '', query_name: str = 'query_crtd_table_entity',
-                                env: str = 'DEV_PSR_ACCOUNT', number_of_records: str = '10'):
+                                env: str = '', number_of_records: str = '10'):
     """
 
                 Execute query into CRTD tables depending on which entity you provide.
@@ -134,7 +134,7 @@ def snowflake_query_ctrd_tables(entity: str = '', query_name: str = 'query_crtd_
 
 # Query STATS Table
 def snowflake_query_stats_table(query_name: str = 'query_ingestion_time',
-                                env: str = 'DEV_PSR_ACCOUNT', entity: str = 'items'):
+                                env: str = '', entity: str = 'items'):
     """
             Query STATS Tabla
 
@@ -161,7 +161,7 @@ def snowflake_query_stats_table(query_name: str = 'query_ingestion_time',
 
 # Query inventory transaction/inventory On hand Table
 def snowflake_query_update_records(query_name: str = 'query_inventory_transaction_update',
-                                   env: str = 'DEV_PSR_ACCOUNT', number_of_records=1):
+                                   env: str = '', number_of_records=0):
     """
             Query inventory Transaction or Inventory On Hand
 

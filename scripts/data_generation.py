@@ -179,106 +179,126 @@ def data_item(number_records, product_group_query):
     return product_group_id, product_name, product_desc, product_uom, parent_group_id_, active_from, active_up, dep, caregory, sub_category, price
 
 
-def data_item_locations(number_records):
+def data_item_locations(number_records, env):
     type_list = ['AVAILABLE_FOR_SALE', 'SALE_IGNORE', 'AVAILABLE_FOR_ORDER', 'CONSTRAIN_ORDERS_DC']
     start = datetime(1999, 1, 1)
     finish = datetime(9999, 1, 1)
+
     item_location_query = snowflake_query_ctrd_tables(query_name='query_items_locations_join',
-                                                      number_of_records=str(int(number_records)))
-    item_list = item_location_query["ITEM"].tolist()
-    loc_list = item_location_query["LOCATION"].tolist()
-    item = []
-    location = []
-    for i in range(0, len(loc_list)):
-        if len(item) == number_records:
-            break
-        for j in range(0, len(item_list)):
-            item.append(item_list[j])
-            location.append(loc_list[i])
-    type = [random.choice(type_list) for i in range(number_records)]
-    active_from = [start for i in range(number_records)]
-    active_up = [finish for i in range(number_records)]
-    minimumdrpqty = [1 for i in range(number_records)]
-    incrementaldrpquantity = [1 for i in range(number_records)]
-    minimummpsquantity = [1 for i in range(number_records)]
-    incrementalmpsquantity = [1 for i in range(number_records)]
-    holdingcost = [1 for i in range(number_records)]
-    orderingoing = [1 for i in range(number_records)]
-    costuom = [15 for i in range(number_records)]
-    unitcost = ['1.99' for i in range(number_records)]
-    unitmargin = ['10.55' for i in range(number_records)]
-    unitprice = [25 for i in range(number_records)]
-    return (item, location, type, active_from, active_up,
-            minimumdrpqty, incrementaldrpquantity, minimummpsquantity,
-            incrementalmpsquantity, holdingcost, orderingoing, costuom, unitcost, unitmargin, unitprice)
+                                                      number_of_records=str(int(number_records)), env=env)
+    if item_location_query is not None:
+        item_list = item_location_query["ITEM"].tolist()
+        loc_list = item_location_query["LOCATION"].tolist()
+        item = []
+        location = []
+        for i in range(0, len(loc_list)):
+            if len(item) == number_records:
+                break
+            for j in range(0, len(item_list)):
+                item.append(item_list[j])
+                location.append(loc_list[i])
+        type = [random.choice(type_list) for i in range(number_records)]
+        active_from = [start for i in range(number_records)]
+        active_up = [finish for i in range(number_records)]
+        minimumdrpqty = [1 for i in range(number_records)]
+        incrementaldrpquantity = [1 for i in range(number_records)]
+        minimummpsquantity = [1 for i in range(number_records)]
+        incrementalmpsquantity = [1 for i in range(number_records)]
+        holdingcost = [1 for i in range(number_records)]
+        orderingoing = [1 for i in range(number_records)]
+        costuom = [15 for i in range(number_records)]
+        unitcost = ['1.99' for i in range(number_records)]
+        unitmargin = ['10.55' for i in range(number_records)]
+        unitprice = [25 for i in range(number_records)]
+        return (item, location, type, active_from, active_up,
+                minimumdrpqty, incrementaldrpquantity, minimummpsquantity,
+                incrementalmpsquantity, holdingcost, orderingoing, costuom, unitcost, unitmargin, unitprice)
+    else:
+        return 'Not itemlocation combinations'
 
 
-def data_inventory_on_hand(number_records, tran_date: datetime = dt.datetime.now()):
+def data_inventory_on_hand(number_records, tran_date: datetime = dt.datetime.now(), env=''):
     item_loc = snowflake_query_ctrd_tables(query_name='query_crtd_table_item_locations',
-                                           number_of_records=str(number_records))
-    product = []
-    location = []
-    available = []
-    unit_of_measure = []
-    quantity = []
-    time = []
-    project = []
-    store = []
-    dupwarning = False
-    for i in range(number_records):
-        item_loc_row = i
-        if i >= len(item_loc.index):
-            item_loc_row = fake.random_int(min=0, max=len(item_loc.index) - 1)
-            dupwarning = True
-        product.append(item_loc['ITEM'][item_loc_row])
-        location.append(item_loc['LOCATION'][item_loc_row])
-        project.append(item_loc['LOCATION'][item_loc_row])
-        store.append(item_loc['LOCATIONTYPECODE'][item_loc_row])
-        quantity.append(fake.bothify(text='##'))
-        time.append((tran_date + timedelta(days=i / number_records)).strftime('%Y-%m-%d %H:%M:%S.%f')[:-3])
-        available.append((tran_date + timedelta(days=i / number_records)).strftime('%Y-%m-%d %H:%M:%S.%f')[:-3])
-        unit_of_measure.append('EA')
-    logger.info('finished generating inventory transaction dataset')
-    if dupwarning:
-        logger.warn(
-            'NOTE: There were more item_on_hand records requested than there were curated item_locations in this '
-            'customer realm.')
-        logger.warn(
-            'It is likely that you will see curation records rejected due to primary key uniqueness constraints.')
-    return product, location, available, unit_of_measure, quantity, time, project, store
+                                           number_of_records=str(number_records),
+                                           env=env)
+    if len(item_loc) > 0:
+        product = []
+        location = []
+        available = []
+        unit_of_measure = []
+        quantity = []
+        time = []
+        project = []
+        store = []
+        dupwarning = False
+        for i in range(number_records):
+            item_loc_row = i
+            if i >= len(item_loc.index):
+                item_loc_row = fake.random_int(min=0, max=len(item_loc.index) - 1)
+                dupwarning = True
+            product.append(item_loc['ITEM'][item_loc_row])
+            location.append(item_loc['LOCATION'][item_loc_row])
+            project.append(item_loc['LOCATION'][item_loc_row])
+            store.append(item_loc['LOCATIONTYPECODE'][item_loc_row])
+            quantity.append(fake.bothify(text='##'))
+            time.append((tran_date + timedelta(days=i / number_records)).strftime('%Y-%m-%d %H:%M:%S.%f')[:-3])
+            available.append((tran_date + timedelta(days=i / number_records)).strftime('%Y-%m-%d %H:%M:%S.%f')[:-3])
+            unit_of_measure.append('EA')
+        logger.info('finished generating inventory transaction dataset')
+        if dupwarning:
+            logger.warn(
+                'NOTE: There were more item_on_hand records requested than there were curated item_locations in this '
+                'customer realm.')
+            logger.warn(
+                'It is likely that you will see curation records rejected due to primary key uniqueness constraints.')
+        return product, location, available, unit_of_measure, quantity, time, project, store
+    else:
+        if number_records == 0:
+            return 'not generate Data'
+        else:
+            return None
 
 
-def data_inventory_transactions(number_records, tran_date: datetime = dt.datetime.now()):
+def data_inventory_transactions(number_records, tran_date: datetime = dt.datetime.now(), env=''):
     item_loc = snowflake_query_ctrd_tables(query_name='query_crtd_table_item_locations',
-                                           number_of_records=str(int(number_records)))
-    item_list = []
-    loc_list = []
-    start_time = []
-    last_sold = []
-    type = []
-    quantity = []
-    uom = []
-    salesrevenue = []
-    dupwarning = False
-    logger.info('Generating {0} inventory transaction records'.format(number_records))
-    for i in range(number_records):
-        item_loc_row = i
-        if i >= len(item_loc.index):
-            item_loc_row = fake.random_int(min=0, max=len(item_loc.index) - 1)
-            dupwarning = True
-        item_list.append(item_loc['ITEM'][item_loc_row])
-        loc_list.append(item_loc['LOCATION'][item_loc_row])
-        start_time.append(tran_date.strftime('%Y-%m-%d'))
-        last_sold.append((tran_date + timedelta(days=i / number_records)).strftime('%Y-%m-%d %H:%M:%S.%f')[:-3])
-        type.append(random.choice(['11', '41']))
-        quantity.append(fake.random_int(min=1, max=15))
-        uom.append('EA')
-        salesrevenue.append(fake.bothify(text='##.##'))
-    logger.info('finished generating inventory transaction dataset')
-    if dupwarning:
-        logger.warn(
-            'NOTE: There were more inventory_transaction records requested than there were curated item_locations in '
-            'this customer realm.')
-        logger.warn(
-            'It is likely that you will see curation records rejected due to primary key uniqueness constraints.')
-    return item_list, loc_list, type, quantity, uom, start_time, last_sold, salesrevenue
+                                           number_of_records=str(int(number_records)),
+                                           env=env)
+
+    if len(item_loc) > 0:
+        item_list = []
+        loc_list = []
+        start_time = []
+        last_sold = []
+        type = []
+        quantity = []
+        uom = []
+        salesrevenue = []
+        dupwarning = False
+        logger.info('Generating {0} inventory transaction records'.format(number_records))
+        for i in range(number_records):
+            item_loc_row = i
+            if i >= len(item_loc.index):
+                item_loc_row = fake.random_int(min=0, max=len(item_loc.index) - 1)
+                dupwarning = True
+            item_list.append(item_loc['ITEM'][item_loc_row])
+            loc_list.append(item_loc['LOCATION'][item_loc_row])
+            start_time.append(tran_date.strftime('%Y-%m-%d'))
+            last_sold.append((tran_date + timedelta(days=i / number_records)).strftime('%Y-%m-%d %H:%M:%S.%f')[:-3])
+            type.append(random.choice(['11', '41']))
+            quantity.append(fake.random_int(min=1, max=15))
+            uom.append('EA')
+            salesrevenue.append(fake.bothify(text='##.##'))
+        logger.info('finished generating inventory transaction dataset')
+        if dupwarning:
+            logger.warn(
+                'NOTE: There were more inventory_transaction records requested than there were curated item_locations '
+                'in '
+                'this customer realm.')
+            logger.warn(
+                'It is likely that you will see curation records rejected due to primary key uniqueness constraints.')
+        return item_list, loc_list, type, quantity, uom, start_time, last_sold, salesrevenue
+    else:
+        if number_records == 0:
+            return 'not generate Data'
+        else:
+            return None

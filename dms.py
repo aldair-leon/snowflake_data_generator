@@ -5,30 +5,6 @@ import datetime
 from scripts.file_generation import FileGenerationData, FileGenerationHistoricalData
 from scripts.azure_blob_storage import azure_blob_upload_files
 
-#
-#
-#          DATA GENERATION
-#
-
-st.title('DMS 2.0')
-st.header('DATA GENERATION')
-st.sidebar.success("Options")
-env = env_options()
-env_load = list(env[1])
-env = list(env[0])
-env.append('SELECT ENV')
-env_load.append('SELECT ENV')
-option = st.selectbox('Select Snowflake ENV', env, index=2)
-with st.expander("GENERATE DATA", expanded=True):
-    tab1, tab2 = st.tabs(["Custom Data", "Historical Data"])
-
-
-#
-#
-#                 FUNCTIONS
-#
-#
-
 
 def data_generation():
     with tab1:
@@ -60,7 +36,12 @@ def data_generation():
             if entity == 'itemlocations':
                 with st.spinner():
                     msn = data_batch.data_generation_item_loc_combinations()
-                st.success('Done!')
+                    if msn != 'Not itemlocation combinations':
+                        st.success('Done!')
+                    else:
+                        st.error('Not itemlocation combinations data  created please verify data in CRTD_ITEM and '
+                                 'CRTD_LOCATION')
+
                 # st.markdown(f'	:white_check_mark: File(s) local path: \t{msn}"id_file"')
             elif entity == 'items' or entity == 'locations' or entity == 'itemhierarchylevelmembers':
                 with st.spinner():
@@ -70,7 +51,10 @@ def data_generation():
             else:
                 with st.spinner():
                     msn = data_batch.data_generation_transactional()
-                st.success('Done!')
+                    if msn is not None:
+                        st.warning(msn)
+                    else:
+                        st.success('Done')
                 # st.markdown(f'	:white_check_mark: File(s) local path: \t{msn}"id_file"')
 
 
@@ -110,15 +94,26 @@ def data_generation_historical():
             active = False
         if st.button('Create Historical Data', disabled=active):
             historical = FileGenerationHistoricalData(date_start=start,
-                                                      date_finish=finish)
+                                                      date_finish=finish,
+                                                      env=option)
             with st.spinner():
-                historical.historical_data(number_files_Onhand=int(files_inventoryOnhand),
-                                           total_records_Onhand=int(records_inventoryOnhand),
-                                           total_errors_Onhand=int(error_records_inventoryOnhand),
-                                           number_files_Transac=int(files_inventoryTransactions),
-                                           total_records_Transac=int(records_inventoryTransactions),
-                                           total_errors_Transac=int(error_records_inventoryTransactions))
-                st.success('Done!')
+                msn = historical.historical_data(number_files_Onhand=int(files_inventoryOnhand),
+                                                 total_records_Onhand=int(records_inventoryOnhand),
+                                                 total_errors_Onhand=int(error_records_inventoryOnhand),
+                                                 number_files_Transac=int(files_inventoryTransactions),
+                                                 total_records_Transac=int(records_inventoryTransactions),
+                                                 total_errors_Transac=int(error_records_inventoryTransactions))
+
+                if msn[0] == 'Not data in CRTD_ITEMLOCATIONS for inventoryOnhand please verify your DB':
+                    st.warning(msn[0])
+                if msn[0] == 'No data generated for InventoryOnhand':
+                    st.warning(msn[0])
+                if msn[1] == 'Not data in CRTD_ITEMLOCATIONS for inventoryTransaction please verify your DB':
+                    st.warning(msn[1])
+                if msn[1] == 'No data generated for InventoryTransactions':
+                    st.warning(msn[1])
+                else:
+                    st.success('Done!')
 
 
 def data_ingest():
@@ -137,11 +132,18 @@ def data_ingest():
                 azure_blob_upload_files(blob_container=option_load, entity=entity_load)
             st.success('Done!')
 
-            #
-            #
-            # INGEST DATA
-            #
-
+# DATA GENERATION
+st.title('DMS 2.0')
+st.header('DATA GENERATION')
+st.sidebar.success("Options")
+env = env_options()
+env_load = list(env[1])
+env = list(env[0])
+env.append('SELECT ENV')
+env_load.append('SELECT ENV')
+option = st.selectbox('Select Snowflake ENV', env, index=2)
+with st.expander("GENERATE DATA", expanded=True):
+    tab1, tab2 = st.tabs(["Custom Data", "Historical Data"])
 
 if option == 'SELECT ENV':
     st.info('Please Snowflake ENV')
@@ -149,6 +151,7 @@ else:
     data_generation()
     data_generation_historical()
 
+# DATA INGESTION
 st.header('INGEST DATA')
 option_load = st.selectbox('Select Blob Storage ENV', env_load, index=2)
 
