@@ -1,9 +1,13 @@
+import os
+from scripts.snowflake_connection import snowflake_query_stats_table
+from scripts.env_config import snowflake_account_blob_storage
 import streamlit as st
 from scripts.env_config import env_options
 from datetime import datetime
 import datetime
 from scripts.file_generation import FileGenerationData, FileGenerationHistoricalData
 from scripts.azure_blob_storage import azure_blob_upload_files
+from scripts.env_config import data_folder
 
 
 def data_generation():
@@ -118,19 +122,59 @@ def data_generation_historical():
 
 def data_ingest():
     with st.expander("INGEST DATA", expanded=True):
+        snowflake_account = snowflake_account_blob_storage(option_load)
         entity_load = st.selectbox(
             'Ingest Entity',
             ('Select entity', 'items', 'locations', 'itemlocations', 'inventoryonhand', 'inventorytransactions',
              'itemhierarchylevelmembers'))
-        if entity_load == 'Select entity':
+        if entity_load != 'Select entity':
+            col1, col2 = st.columns([3, 1], gap="large")
+            all_files = []
+            data_folder_path = data_folder()
+            data_folder_path_ingress = os.path.join(data_folder_path, 'ingress', entity_load)
+            files = os.listdir(data_folder_path_ingress)
+            with col2:
+                if st.button('Select all the files'):
+                    all_files = files
+            with col1:
+                file_select = st.multiselect(label='Select your files',
+                                             options=files,
+                                             default=all_files)
+
+        if entity_load == 'Select entity' or file_select == []:
             a = True
-            st.info("Please select your entity!")
+            st.info("Please select your entity and file(s)!")
         else:
             a = False
         if st.button('Load Data', disabled=a):
             with st.spinner():
-                azure_blob_upload_files(blob_container=option_load, entity=entity_load)
+                azure_blob_upload_files(blob_container=option_load, entity=entity_load, file_list=file_select)
+
             st.success('Done!')
+
+    with st.expander("TRACK INGESTION", expanded=False):
+        all_files_proc = []
+        if entity_load != 'Select entity':
+            data_folder_path_proc = data_folder()
+            data_folder_path_processing = os.path.join(data_folder_path_proc, 'processing', entity_load)
+            files_processing = os.listdir(data_folder_path_processing)
+            col3, col4 = st.columns([3, 1], gap="large")
+            with col4:
+                if st.button('Select all the ingested files'):
+                    all_files_proc = files_processing
+            with col3:
+                file_select_processing = st.multiselect(label='Select ingestion tracking file',
+                                                        options=files_processing,
+                                                        default=all_files_proc)
+            if not file_select_processing:
+                st.warning('No data!')
+            else:
+                with st.spinner():
+                    if st.button('Update'):
+                        x = snowflake_query_stats_table(query_name='query_status_ingestion', files=file_select_processing,
+                                                        env=snowflake_account)
+                        st.dataframe(x)
+
 
 # DATA GENERATION
 st.title('DMS 2.0')

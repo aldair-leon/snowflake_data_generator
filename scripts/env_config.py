@@ -109,3 +109,9 @@ def entity_file() -> str:
 def env_options():
     env = read_env_file()
     return list(env['snowflake'].keys()), list(env['blob_storage'].keys())
+
+
+def snowflake_account_blob_storage(blob_env):
+    env_file = read_env_file()
+    account = env_file['blob_storage'][blob_env][0]["snowflake_account"]
+    return account

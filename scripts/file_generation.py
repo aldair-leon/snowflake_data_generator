@@ -1,6 +1,4 @@
 import pandas as pd
-from werkzeug.utils import environ_property
-
 from scripts.data_generation import data_locations, data_itemhierarchylevelmembers, data_item, data_item_locations, \
     data_inventory_on_hand, data_inventory_transactions, data_generation_load_header_columns, \
     data_folder_ingress_processing
