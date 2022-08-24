@@ -133,8 +133,8 @@ def snowflake_query_ctrd_tables(entity: str = '', query_name: str = 'query_crtd_
 
 
 # Query STATS Table
-def snowflake_query_stats_table(query_name: str = 'query_status_ingestion',
-                                env: str = '', entity: str = 'items', files: list = []):
+def snowflake_query_stats_table(query_name: str = '',
+                                env: str = '', files: list = []):
     """
             Query STATS Tabla
 
@@ -144,13 +144,10 @@ def snowflake_query_stats_table(query_name: str = 'query_status_ingestion',
     ctx = snowflake_connection(env)
     cursor = ctx.cursor()
     # files = processing_folder_list(entity)
-    print(files)
     file_name_list = ",".join(['%s'] * len(files))
-    print(file_name_list)
 
     try:
         query_stats = query_file[query_name].format(file_name_list)
-        print(query_stats)
         logger.info('Executing query....{0}'.format(query_stats))
         execution = cursor.execute(query_stats, files)
         result = execution.fetch_pandas_all()

@@ -113,5 +113,6 @@ def env_options():
 
 def snowflake_account_blob_storage(blob_env):
     env_file = read_env_file()
-    account = env_file['blob_storage'][blob_env][0]["snowflake_account"]
-    return account
+    blob = list(env_file['blob_storage']).index(str(blob_env))
+    snow = list(env_file['snowflake'])[int(blob)]
+    return snow

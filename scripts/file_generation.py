@@ -69,7 +69,7 @@ class FileGenerationData:
                         f"\nEntity: {self.entity_name} \nNumber of records per file: {self.number_records} \n"
                         f"Number of files: {self.number_files} \n"
                         f"Number of error records in all the batch: {self.error_data_records * self.number_files}")
-            return join_location_file_path
+            return join_location_file_path, self.name_file
         else:
             logger.info('\n\t<-----------------------------WARNING !--------------------------------------->'
                         '\nPlease enter the correct entity name this function only accept -> items, locations or '
@@ -102,7 +102,7 @@ class FileGenerationData:
                             f"\nEntity: {self.entity_name} \nNumber of records per file: {self.number_records} \n"
                             f"Number of files: {self.number_files} \n"
                             f"Number of error records in all the batch: {self.error_data_records * self.number_files}")
-                return join_location_file_path
+                return join_location_file_path, self.name_file
             else:
                 return 'Not itemlocation combinations'
         else:
@@ -145,6 +145,7 @@ class FileGenerationData:
                                 f"\nEntity: {self.entity_name} \nNumber of records per file: {self.number_records} \n"
                                 f"Number of files: {self.number_files} \n"
                                 f"Number of error records in all the batch: {self.error_data_records * self.number_files}")
+                    return self.name_file
             else:
                 if self.entity_name == 'inventorytransactions':
                     if data is None:
@@ -214,6 +215,7 @@ class FileGenerationHistoricalData:
                                 f"Number of files per day: {number_files_Onhand} \n"
                                 f"Range of date: From {self.data_start.strftime('%Y-%m-%d')} To {self.date_finish.strftime('%Y-%m-%d')}\n"
                                 f"Number of error per day: {total_error_data}")
+                    return self.name_file
         else:
             if data is None:
                 return 'Not data in CRTD_ITEMLOCATIONS for inventoryOnhand please verify your DB'
@@ -261,6 +263,7 @@ class FileGenerationHistoricalData:
                                 f"Number of files per day: {number_files_Transac} \n"
                                 f"Range of date: From {self.data_start.strftime('%Y-%m-%d')} To {self.date_finish.strftime('%Y-%m-%d')}\n"
                                 f"Number of error per day: {total_error_data}")
+                    return self.name_file
         else:
             if data is None:
                 return 'Not data in CRTD_ITEMLOCATIONS for inventoryTransaction please verify your DB'
