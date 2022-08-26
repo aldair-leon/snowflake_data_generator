@@ -1,16 +1,25 @@
-import os
 from scripts.snowflake_connection import snowflake_query_stats_table
 from scripts.env_config import snowflake_account_blob_storage
 import streamlit as st
-from scripts.env_config import env_options
-from datetime import datetime
-import datetime
-from scripts.file_generation import FileGenerationData, FileGenerationHistoricalData
+from scripts.file_generation import *
 from scripts.azure_blob_storage import azure_blob_upload_files
-from scripts.env_config import data_folder
+from scripts.env_config import data_folder, env_streamlit_options
+
+# MAIN CONFIG
+st.set_page_config(page_title="DATA GENERATION",
+                   page_icon=":bar_chart:", layout="wide")
+hide_st_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+            </style>
+            """
+st.sidebar.success("Options")
+st.markdown(hide_st_style, unsafe_allow_html=True)
 
 
-class DMSDashboard:
+class DMSDataGeneration:
 
     def __init__(self):
         pass
@@ -32,10 +41,10 @@ class DMSDashboard:
                 error_records = st.text_input('Number of error Records', '0')
             if files == '0' or records == '0' or entity == 'Select entity':
                 st.info('Specify number of files , number of records and entity!')
-                active = True
+                disabled = True
             else:
-                active = False
-            if st.button('Create Custom Data', disabled=active):
+                disabled = False
+            if st.button('Create Custom Data', disabled=disabled):
                 data_batch = FileGenerationData(entity,
                                                 int(records),
                                                 int(files),
@@ -50,13 +59,10 @@ class DMSDashboard:
                         else:
                             st.error('Not itemlocation combinations data  created please verify data in CRTD_ITEM and '
                                      'CRTD_LOCATION')
-
-                    # st.markdown(f'	:white_check_mark: File(s) local path: \t{msn}"id_file"')
                 elif entity == 'items' or entity == 'locations' or entity == 'itemhierarchylevelmembers':
                     with st.spinner():
                         self.msn = data_batch.data_generation_master_data()
                     st.success('Done!')
-                    # st.markdown(f'	:white_check_mark: File(s) local path: \t{msn}"id_file"')
                 else:
                     with st.spinner():
                         self.msn = data_batch.data_generation_transactional()
@@ -64,7 +70,6 @@ class DMSDashboard:
                             st.warning(self.msn)
                         else:
                             st.success('Done')
-                    # st.markdown(f'	:white_check_mark: File(s) local path: \t{msn}"id_file"')
 
     def data_generation_historical(self):
         with tab2:
@@ -89,21 +94,21 @@ class DMSDashboard:
 
             col4, col5 = st.columns(2)
             with col4:
-                start = st.date_input(
+                start_hist = st.date_input(
                     "Start date",
-                    datetime.date(2019, 7, 6))
+                    datetime.now())
             with col5:
-                finish = st.date_input(
+                finish_hist = st.date_input(
                     "Finish date",
-                    datetime.date(2019, 7, 6))
+                    datetime.now())
             if files_inventoryTransactions == '0' and records_inventoryTransactions == '0' and files_inventoryOnhand == '0' and records_inventoryOnhand == '0':
                 st.info('Specify number of files and number od records!')
-                active = True
+                disabled = True
             else:
-                active = False
-            if st.button('Create Historical Data', disabled=active):
-                historical = FileGenerationHistoricalData(date_start=start,
-                                                          date_finish=finish,
+                disabled = False
+            if st.button('Create Historical Data', disabled=disabled):
+                historical = FileGenerationHistoricalData(date_start=start_hist,
+                                                          date_finish=finish_hist,
                                                           env=option)
                 with st.spinner():
                     self.msn = historical.historical_data(number_files_Onhand=int(files_inventoryOnhand),
@@ -138,11 +143,11 @@ class DMSDashboard:
                 file_select = st.multiselect(label='Select your files',
                                              options=files)
             if entity_load == 'Select entity' or file_select == []:
-                a = True
+                disabled = True
                 st.info("Please select your entity and file(s)!")
             else:
-                a = False
-            if st.button('Load Data', disabled=a):
+                disabled = False
+            if st.button('Load Data', disabled=disabled):
                 with st.spinner():
                     azure_blob_upload_files(blob_container=option_load, entity=entity_load, file_list=file_select)
 
@@ -170,16 +175,17 @@ class DMSDashboard:
                                 file = file_select_processing[i]
                                 for j in range(0, len(status)):
                                     x_new = x.query('@file==`FILENAME`  and STATUS in @status').reset_index(drop=True)
-                                msn = x_new.head(1)
-                                if msn['STATUS'].item() == 'DATA_MERGED_FROM_STAGING_INTO_CURATED_STORE':
-                                    emoji = ':heavy_check_mark:'
-                                else:
-                                    emoji = ':x:'
-                                st.write(f'''
-                                    |File name|Status | |
-                                    |:-:	|   :-:	| :-:  |                              
-                                    |{msn['FILENAME'].to_string(index=False)}|  {msn['STATUS'].to_string(index=False)}|{emoji} |
-                                     ''')
+                                if not x_new.empty:
+                                    msn = x_new.head(1)
+                                    if msn['STATUS'].item() == 'DATA_MERGED_FROM_STAGING_INTO_CURATED_STORE':
+                                        emoji = ':heavy_check_mark:'
+                                    else:
+                                        emoji = ':x:'
+                                    st.write(f'''
+                                        |File name|Status | |
+                                        |:-:	|   :-:	| :-:  |                              
+                                        |{msn['FILENAME'].to_string(index=False)}|  {msn['STATUS'].to_string(index=False)}|{emoji} |
+                                         ''')
                         # if len(x) % 3 != 0:
                         #     y = len(x) % 3
                         #     x_new = x.tail(y).copy().reset_index(drop=True)
@@ -248,39 +254,20 @@ class DMSDashboard:
                         #
 
 
-# DATA GENERATION
-st.set_page_config(page_title="DMS 2.0",
-                   page_icon=":bar_chart:", layout="wide")
-hide_st_style = """
-            <style>
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            header {visibility: hidden;}
-            </style>
-            """
-st.markdown(hide_st_style, unsafe_allow_html=True)
-start = DMSDashboard()
 st.title('DMS 2.0')
+start = DMSDataGeneration()
+env = env_streamlit_options()
+option = st.selectbox('Select Snowflake ENV', env[1], index=2)
 st.header('DATA GENERATION')
-st.sidebar.success("Options")
-env = env_options()
-env_load = list(env[1])
-env = list(env[0])
-env.append('SELECT ENV')
-env_load.append('SELECT ENV')
-option = st.selectbox('Select Snowflake ENV', env, index=2)
 with st.expander("GENERATE DATA", expanded=True):
     tab1, tab2 = st.tabs(["Custom Data", "Historical Data"])
-
 if option == 'SELECT ENV':
     st.info('Please Snowflake ENV')
 else:
     start.data_generation()
     start.data_generation_historical()
-
-# DATA INGESTION
 st.header('INGEST DATA')
-option_load = st.selectbox('Select Blob Storage ENV', env_load, index=2)
+option_load = st.selectbox('Select Blob Storage ENV', env[0], index=2)
 
 if option_load == 'SELECT ENV':
     st.info('Please select Blob Storage ENV')

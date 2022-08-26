@@ -116,3 +116,12 @@ def snowflake_account_blob_storage(blob_env):
     blob = list(env_file['blob_storage']).index(str(blob_env))
     snow = list(env_file['snowflake'])[int(blob)]
     return snow
+
+
+def env_streamlit_options():
+    env = env_options()
+    env_blob = list(env[1])
+    env_snow = list(env[0])
+    env_blob.append('SELECT ENV')
+    env_snow.append('SELECT ENV')
+    return env_blob, env_snow

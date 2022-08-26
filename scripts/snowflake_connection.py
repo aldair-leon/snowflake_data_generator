@@ -182,3 +182,22 @@ def snowflake_query_update_records(query_name: str = 'query_inventory_transactio
         logger.error(e)
         logger.error('<-- Query syntax error -->')
         logger.error('Verify your query: {0}'.format(query_file))
+
+
+def snowflake_query_psr(query_name: str, env: str, data_start, date_finish):
+    query_file = read_query_file()
+    ctx = snowflake_connection(env)
+    cursor = ctx.cursor()
+
+    try:
+
+        query_psr = query_file[query_name].format(data_start, date_finish)
+        execution = cursor.execute(query_psr)
+        logger.info('Executing query....{0}'.format(query_psr))
+        result = execution.fetch_pandas_all()
+        return result
+
+    except ProgrammingError as e:
+        logger.error(e)
+        logger.error('<-- Query syntax error -->')
+        logger.error('Verify your query: {0}'.format(query_file))
