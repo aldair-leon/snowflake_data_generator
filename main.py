@@ -5,49 +5,56 @@
 
 """
 
-from scripts.azure_blob_storage import *
-from scripts.file_generation import *
+from scripts.file_generation import FileGenerationData, FileGenerationHistoricalData
+from datetime import datetime
+from scripts.azure_blob_storage import azure_blob_upload_files
 
-# # Verify env
-# """
-# Number of parameters = 1
-# env = DEV_PSR (Set as default )
-# env available resources/env.json
-# """
-# snowflake_query_verify_env(env)
-#
-# # Query CRTD Tables
-# """
-# Number of parameters = 2
-# env = DEV_PSR (Set as default )
-# entity = ITEM, ITEMLOCATION .... etc
-# """
-# snowflake_query_ctrd_tables(entity)
-#
-# # Access Blob Storage list files
-# """
-# Number of parameters = 2
-# env = DEV_PSR (Set as default )
-# folder = processing, egress, summary .... etc
-# """
-# azure_blob_list_file(env, folder)
-#
-# # Access Blob Storage upload files
-# """
-# Number of parameters = 1
-# env = DEV_PSR (Set as default )
-# """
-entity = 'inventorytransactions'  # items, locations, itemlocations, inventoryonhand, inventorytransactions,
-# itemhierarchylevelmembers, measurements
+'''
 
-env = 'DEV_PSR_ACCOUNT'
-env_azure = 'DEV_PSR'
-folder = 'processing'
+                                Data creation for all the entities Master and Transactional
 
-number_of_records = 10
-number_of_files = 1
-number_of_error_records = 0
+        1) FileGenerationData -> Principal Object
 
+        2) data_batch.data_generation() -> Build all variables and configurations for your data. This method must
+                                           run first.
+        3) data_batch.data_generation_master_data() -> This method create master data from Items, Locations and
+                                                        Itemhierarchylevelmembers
+        4) data_batch.data_generation_item_loc_combinations() -> This method generated data only for itemlocations
 
-data_generation_create_data_main(entity, number_of_records, number_of_files, number_of_error_records)
-# azure_blob_upload_files(blob_container=env_azure, entity=entity)
+        5) data_batch.data_generation_transactional() -> This method generated transactional data inventoryonhand,
+                                                         inventorytransactions
+
+'''
+
+entity_name = 'inventorytransactions'
+number_records = 100000
+number_files = 1
+error_data_records = 0
+env = 'DEV_PSR_ACCOUNT'  # DEV_PSR_ACCOUNT_EU --> Dedicated env
+env_blob_containe = 'DEV_PSR'  # DEV_PSR_EU --> Dedicated env
+
+data_batch = FileGenerationData(entity_name,
+                                number_records,
+                                number_files,
+                                error_data_records,
+                                env)  # 1
+
+# data_batch.data_generation()  # 2
+# data_batch.data_generation_master_data()            # 3
+# data_batch.data_generation_item_loc_combinations()  # 4
+# data_batch.data_generation_transactional()          # 5
+
+# azure_blob_upload_files(blob_container=env_blob_containe, entity=entity_name)
+
+'''
+                                Historical data only for transactional entities
+
+'''
+
+transactional_records_start = datetime.strptime('2022-07-03', '%Y-%m-%d')
+transactional_records_end = datetime.strptime('2022-07-04', '%Y-%m-%d')
+
+historical = FileGenerationHistoricalData(date_start=transactional_records_start,
+                                          date_finish=transactional_records_end)
+historical.historical_data(number_files_Onhand=1, total_records_Onhand=1, total_errors_Onhand=0,
+                           number_files_Transac=0, total_records_Transac=0, total_errors_Transac=0)

@@ -20,13 +20,13 @@ def env_folder_path() -> str:
                 This function verify if snowflake/resources directory exist.
 
     """
-    verify_path = os.path.exists(os.path.abspath("../snowflake/resources"))
+    verify_path = os.path.exists(os.path.abspath("../snowflake_data_generator/resources"))
     # verify_path = os.path.exists(os.path.abspath("../resources"))
     if verify_path:
         logger.info('Verify env file...')
     else:
         logger.error('Error env file, please verify your resource file!')
-    return os.path.abspath("../snowflake/resources")
+    return os.path.abspath("../snowflake_data_generator/resources")
     # return os.path.abspath("../resources")
 
 
@@ -75,11 +75,11 @@ def data_folder() -> str:
                 This function verify if snowflake/data file exist and return abspath
 
     """
-    verify_path = os.path.exists(os.path.abspath("../snowflake/data"))
+    verify_path = os.path.exists(os.path.abspath("../snowflake_data_generator/data"))
     # verify_path = os.path.exists(os.path.abspath("../data"))
     if verify_path:
         logger.info('Verify data folder...')
-        return os.path.abspath("../snowflake/data")
+        return os.path.abspath("../snowflake_data_generator/data")
         # return os.path.abspath("../data")
     else:
         logger.error('Error data folder doesnt exist, please verify your path!')
@@ -102,3 +102,26 @@ def entity_file() -> str:
 
     else:
         logger.error('Error Loading entity file!')
+
+
+# Env options
+
+def env_options():
+    env = read_env_file()
+    return list(env['snowflake'].keys()), list(env['blob_storage'].keys())
+
+
+def snowflake_account_blob_storage(blob_env):
+    env_file = read_env_file()
+    blob = list(env_file['blob_storage']).index(str(blob_env))
+    snow = list(env_file['snowflake'])[int(blob)]
+    return snow
+
+
+def env_streamlit_options():
+    env = env_options()
+    env_blob = list(env[1])
+    env_snow = list(env[0])
+    env_blob.append('SELECT ENV')
+    env_snow.append('SELECT ENV')
+    return env_blob, env_snow

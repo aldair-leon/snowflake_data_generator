@@ -41,6 +41,7 @@ def data_items_error(number_of_records, items_header, df):
 
 
 def data_itemlocation_error(number_of_records, itemlocation_header, df):
+    df = df.reset_index(drop=True)
     productid = 'ERROR_ITEM_'
     location = 'ERROR_LOCATION_'
     type = 'REPLENISHMENT_'
