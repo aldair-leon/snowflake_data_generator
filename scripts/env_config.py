@@ -20,7 +20,7 @@ def env_folder_path() -> str:
                 This function verify if snowflake/resources directory exist.
 
     """
-    verify_path = os.path.exists(os.path.abspath("../snowflake_data_generator/resources"))
+    verify_path = os.path.exists(os.path.abspath("../snowflake_data_generator/resource"))
     # verify_path = os.path.exists(os.path.abspath("../resources"))
     if verify_path:
         logger.info('Verify env file...')

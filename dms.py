@@ -16,7 +16,7 @@ hide_st_style = """
             </style>
             """
 st.sidebar.success("Options")
-st.markdown(hide_st_style, unsafe_allow_html=True)
+#st.markdown(hide_st_style, unsafe_allow_html=True)
 
 
 class DMSDataGeneration:
