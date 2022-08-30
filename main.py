@@ -49,8 +49,8 @@ def one_entity_only():
     env_azure = 'DEV_PSR'
     folder = 'processing'
 
-    number_of_records = 1000000
-    number_of_files = 30
+    number_of_records = 24000000
+    number_of_files = 1
     number_of_error_records = 0
 
     # note inventory transaction & inventory_on_hand will generate the above number of records
@@ -74,7 +74,7 @@ def daily_transaction_loop():
     # entity = 'inventoryonhand'  # items, locations, itemlocations, inventoryonhand, inventorytransactions,
     # itemhierarchylevelmembers, measurements
 
-    number_of_records = 1000000
+    number_of_records = 2000000
     number_of_files = 1  # default
     number_of_error_records = 0
 
@@ -84,10 +84,10 @@ def daily_transaction_loop():
     # On Sundays, we also send some updated items, locations, and item_location records to mimic master data updates
     # on a weekly basis
 
-    start_date = datetime.strptime('2019-07-01', '%Y-%m-%d')
-    end_date = datetime.strptime('2019-08-01', '%Y-%m-%d')
-    low_file_count = 2
-    high_file_count = 10
+    start_date = datetime.strptime('2019-10-01', '%Y-%m-%d')
+    end_date = datetime.strptime('2020-01-01', '%Y-%m-%d')
+    low_file_count = 1
+    high_file_count = 3
 
     for date in [start_date + timedelta(days=x) for x in range(0, (end_date - start_date).days)]:
         logger.info('Processing transactions for {0}'.format(date))
@@ -107,7 +107,7 @@ def daily_transaction_loop():
                                              transactional_records_end)
             azure_blob_upload_files(blob_container=env_azure, entity="locations")
 
-            data_generation_create_data_main("itemlocations", 2500, 1,
+            data_generation_create_data_main("itemlocations", 2000, 1,
                                              number_of_error_records, transactional_records_start,
                                              transactional_records_end)
             azure_blob_upload_files(blob_container=env_azure, entity="itemlocations")
@@ -124,3 +124,4 @@ def daily_transaction_loop():
 
 
 daily_transaction_loop()
+# one_entity_only()
