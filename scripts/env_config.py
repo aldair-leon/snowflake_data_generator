@@ -79,7 +79,8 @@ def data_folder() -> str:
     # verify_path = os.path.exists(os.path.abspath("../data"))
     if verify_path:
         logger.info('Verify data folder...')
-        return os.path.abspath("data/")
+        path = os.path.abspath("data/")
+        return path
         # return os.path.abspath("../data")
     else:
         logger.error('Error data folder doesnt exist, please verify your path!')
