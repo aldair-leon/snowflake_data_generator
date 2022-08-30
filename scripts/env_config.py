@@ -8,7 +8,7 @@
 import json
 import os
 from scripts.init_logger import log
-
+import streamlit as st
 # Logger
 logger = log('ENV SETUP')
 
@@ -21,6 +21,7 @@ def env_folder_path() -> str:
 
     """
     # verify_path = os.path.exists(os.path.abspath("../snowflake_data_generator/resource"))
+    st.write(os.path.abspath(__file__))
     verify_path = os.path.exists(os.path.abspath("/resources"))
     if verify_path:
         logger.info('Verify env file...')
