@@ -22,7 +22,6 @@ def env_folder_path() -> str:
     """
     # verify_path = os.path.exists(os.path.abspath("../snowflake_data_generator/resource"))
     verify_path = os.path.exists(os.path.abspath("/resources"))
-    print(verify_path)
     if verify_path:
         logger.info('Verify env file...')
     else:
