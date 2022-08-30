@@ -77,9 +77,11 @@ def data_folder() -> str:
     """
     verify_path = os.path.exists(os.path.abspath("data/"))
     # verify_path = os.path.exists(os.path.abspath("../data"))
+    st.write(verify_path)
     if verify_path:
         logger.info('Verify data folder...')
         path = os.path.abspath("data/")
+        st.write(path)
         return path
         # return os.path.abspath("../data")
     else:

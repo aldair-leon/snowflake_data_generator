@@ -28,7 +28,6 @@ def data_folder_ingress_processing(entity: str):
             or entity == 'inventoryonhand' or entity == 'inventorytransactions' \
             or entity == 'itemhierarchylevelmembers':
         data_folder_entity = data_folder()
-        st.write(data_folder_entity+'\ingress')
         ingress_folder = os.path.join(data_folder_entity, "ingress")
         processing_folder = os.path.join(data_folder_entity, "processing")
         delta_folder = os.path.join(data_folder_entity, "delta")
