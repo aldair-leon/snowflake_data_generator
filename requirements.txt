@@ -1,4 +1,4 @@
-﻿azure-common==1.1.28
+azure-common==1.1.28
 azure-core==1.25.0
 azure-nspkg==3.0.2
 azure-storage-blob==0.37.1

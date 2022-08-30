@@ -113,12 +113,12 @@ class DMSReport:
                     domain={'x': [0.1, 1], 'y': [0.2, 0.9]},
                     title={'text': "Total of files ingested"}))
                 stage_records = go.Figure(go.Indicator(
-                    mode= "number",
+                    mode="number",
                     value=int(self.query_psr_total['STAGEDRECORDS']),
                     domain={'x': [0.1, 1], 'y': [0.2, 0.9]},
                     title={'text': "Total staged records"}))
                 curate_records = go.Figure(go.Indicator(
-                    mode= "number+delta",
+                    mode="number+delta",
                     delta={
                         'reference': int(self.query_psr_total['STAGEDRECORDS']),
                         "valueformat": ".^1"
@@ -127,22 +127,18 @@ class DMSReport:
                     domain={'x': [0.1, 1], 'y': [0.2, 0.9]},
                     title={'text': "Total curated records"}))
                 rejected_records = go.Figure(go.Indicator(
-                    mode= "number",
+                    mode="number",
                     value=int(self.query_psr_total['REJECTEDRECORDS']),
                     domain={'x': [0.1, 1], 'y': [0.2, 0.9]},
                     title={'text': "Total rejected records"}))
                 with col1:
-                    st.plotly_chart(number_files,use_container_width=True)
+                    st.plotly_chart(number_files, use_container_width=True)
                 with col2:
-                    st.plotly_chart(stage_records,use_container_width=True)
+                    st.plotly_chart(stage_records, use_container_width=True)
                 with col3:
                     st.plotly_chart(curate_records, use_container_width=True)
                 with col4:
                     st.plotly_chart(rejected_records, use_container_width=True)
-
-
-
-
 
             # col1.plotly_chart(number_files, use_container_width=True)
             # col2.plotly_chart(stage_records, use_container_width=True)
